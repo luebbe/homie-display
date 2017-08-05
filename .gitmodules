@@ -1,0 +1,3 @@
+[submodule "lib/homie-node-collection"]
+	path = lib/homie-node-collection
+	url = https://github.com/luebbe/homie-node-collection.git
