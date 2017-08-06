@@ -13,10 +13,10 @@
 
 class WuCurrentWeatherFrame: public WuFrame {
 public:
-	WuCurrentWeatherFrame(WundergroundClient *wuClient);
+  WuCurrentWeatherFrame(WundergroundClient *wuClient);
 
-	// Interface OLEDFrame
-	virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  // Interface OLEDFrame
+  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
 };
 
 #endif

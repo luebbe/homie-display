@@ -83,11 +83,11 @@ void setup() {
   ota.setup();
 
   // Display and UI
-	ui.setTargetFPS(10);
-	ui.setFrameAnimation(SLIDE_LEFT);
-	ui.disableAutoTransition();
-	ui.disableAllIndicators();
-	ui.init();
+  ui.setTargetFPS(10);
+  ui.setFrameAnimation(SLIDE_LEFT);
+  ui.disableAutoTransition();
+  ui.disableAllIndicators();
+  ui.init();
   display.flipScreenVertically();
 
   Homie_setFirmware(FW_NAME, FW_VERSION);

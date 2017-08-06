@@ -13,13 +13,13 @@
 
 class OLEDIndexFrame: public OLEDFrame, public OLEDOverlay {
 public:
-	OLEDIndexFrame();
+  OLEDIndexFrame();
 
-	// Interface OLEDFrame
-	virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  // Interface OLEDFrame
+  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
 
-	// Interface OLEDOverlay
-	virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx) override;
+  // Interface OLEDOverlay
+  virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx) override;
 };
 
 #endif

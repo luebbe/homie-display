@@ -13,19 +13,19 @@
 
 class NodeNode: public HomieNode, public OLEDIndexFrame {
 private:
-	const char *_name;
+  const char *_name;
 protected:
   virtual void setup() override;
   virtual void loop() override;
 
 public:
-	NodeNode(const char *name);
+  NodeNode(const char *name);
 
-	// Interface HomieNode
-	// virtual bool handleInput(String const &property, HomieRange range, String const &value) override;
+  // Interface HomieNode
+  // virtual bool handleInput(String const &property, HomieRange range, String const &value) override;
 
-	// Interface OLEDFrame
-	virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  // Interface OLEDFrame
+  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
 
 };
 

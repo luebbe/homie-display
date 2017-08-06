@@ -24,20 +24,20 @@
 class OLEDStatusIndicator : public OLEDOverlay {
 private:
   bool _cfgmode;
-	bool _mqtt;
-	bool _wifi;
+  bool _mqtt;
+  bool _wifi;
   bool _alert;
-	String _statusText;
-	String _alertMessage;
+  String _statusText;
+  String _alertMessage;
 
 public:
-	//OLEDStatusIndicator(SSD1306& display); // TODO: Allow to set reference to Display (or abstraction layer)
-	OLEDStatusIndicator();
-	void Event(const HomieEvent& event);
+  //OLEDStatusIndicator(SSD1306& display); // TODO: Allow to set reference to Display (or abstraction layer)
+  OLEDStatusIndicator();
+  void Event(const HomieEvent& event);
 
   bool handleBroadcast(const String& level, const String& value);
 
-	virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx);
+  virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx);
   void drawWifiStrength(OLEDDisplay& display);
 
   void setStatusText(String const value) {

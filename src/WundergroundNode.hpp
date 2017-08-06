@@ -15,21 +15,22 @@
 
 class WundergroundNode: public HomieNode {
 private:
-	const int  UPDATE_INTERVAL = 600;
-	WundergroundClient *_wuClient;
+  const int  UPDATE_INTERVAL = 600;
+  WundergroundClient *_wuClient;
   WuCurrentWeatherFrame *_wuCurrent;
-	WuForecastFrame *_wuForecast;
-	unsigned long _updateInterval;
+  WuForecastFrame *_wuForecast;
+  unsigned long _updateInterval;
   unsigned long _lastUpdate;
+  bool isConfigured();
 protected:
   virtual void setup() override;
   virtual void loop() override;
 
 public:
-	WundergroundNode(const char *name);
+  WundergroundNode(const char *name);
 
-	// Interface HomieNode
-	// virtual bool handleInput(String const &property, HomieRange range, String const &value) override;
+  // Interface HomieNode
+  // virtual bool handleInput(String const &property, HomieRange range, String const &value) override;
 
 };
 

@@ -12,12 +12,12 @@
 
 class WuForecastFrame: public WuFrame {
 private:
-	void drawForecastDetails(OLEDDisplay &display, int x, int y, int dayIndex);
+  void drawForecastDetails(OLEDDisplay &display, int x, int y, int dayIndex);
 public:
-	WuForecastFrame(WundergroundClient *wuClient);
+  WuForecastFrame(WundergroundClient *wuClient);
 
-	// Interface OLEDFrame
-	virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  // Interface OLEDFrame
+  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
 };
 
 #endif
