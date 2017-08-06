@@ -63,7 +63,7 @@ void onHomieEvent(const HomieEvent& event) {
   }
   // dispatch event
   statusNode.Event(event);
-  //statusOverlay.Event(event);
+  statusOverlay.Event(event);
 }
 
 void loopHandler() {
