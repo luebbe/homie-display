@@ -29,6 +29,7 @@ protected:
 public:
   WundergroundNode(const char *name);
 
+  void beforeSetup();
   // Interface HomieNode
   // virtual bool handleInput(String const &property, HomieRange range, String const &value) override;
 

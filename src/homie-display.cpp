@@ -12,7 +12,7 @@
 
 #include "homie-node-collection.h"
 #include "StatusNode.hpp"
-#include "NodeNode.hpp"
+#include "MqttNode.hpp"
 #include "WundergroundNode.hpp"
 
 // Display & UI
@@ -40,7 +40,7 @@ OLEDDisplayUi ui(&display);
 OLEDStatusIndicator statusOverlay; // Overlay statusOverlay for every frame
 
 StatusNode statusNode("Status");
-NodeNode nodeNode1("Test Node 1");
+MqttNode nodeNode1("Test Node 1");
 WundergroundNode wundergroundNode("Wunderground");
 
 void resumeTransition() {
@@ -75,12 +75,20 @@ void loopHandler() {
   ota.loop();
 }
 
+void setupHandler() {
+  // Called after WiFi is connected
+  Homie.getLogger() << "Setuphandler" << endl;
+}
+
 void setup() {
   Serial.begin(SERIAL_SPEED);
   Serial << endl << endl;
 
   welcome();
   ota.setup();
+
+  nodeNode1.beforeSetup();
+  wundergroundNode.beforeSetup();
 
   // Display and UI
   ui.setTargetFPS(10);
@@ -97,6 +105,7 @@ void setup() {
   Homie.disableResetTrigger();
   Homie.disableLedFeedback();
   Homie.setLoopFunction(loopHandler);
+  Homie.setSetupFunction(setupHandler);
   Homie.setup();
 
   timeClient.setTimeOffset(2*3600); // Zeitzonenoffset als Homie Parameter implementieren

@@ -16,8 +16,8 @@ HomieSetting<const char*> wundergroundCity("WuCity", "The city for which you wan
 // Wunderground Settings
 const boolean IS_METRIC = true;
 const char * WUNDERGRROUND_API_KEY = "YOUR_API_KEY";
-const char * WUNDERGRROUND_LANGUAGE = "DE";
-const char * WUNDERGROUND_COUNTRY = "DE";
+const char * WUNDERGRROUND_LANGUAGE = "EN";
+const char * WUNDERGROUND_COUNTRY = "UK";
 const char * WUNDERGROUND_CITY = "YOURTOWN";
 
 WundergroundNode::WundergroundNode(const char *name)
@@ -27,6 +27,13 @@ WundergroundNode::WundergroundNode(const char *name)
   _wuForecast = new WuForecastFrame(_wuClient);
   _updateInterval = UPDATE_INTERVAL;
   _lastUpdate = 0;
+}
+
+void WundergroundNode::beforeSetup()
+{
+  // This has to be called before Homie.setup, because otherwise the default Values will
+  // override the values which were already read from config.json
+  Homie.getLogger() << "• WundergroundNode Before Setup" << endl;
   wundergroundApiKey.setDefaultValue(WUNDERGRROUND_API_KEY);
   wundergroundLanguage.setDefaultValue(WUNDERGRROUND_LANGUAGE);
   wundergroundCountry.setDefaultValue(WUNDERGROUND_COUNTRY);
@@ -34,7 +41,7 @@ WundergroundNode::WundergroundNode(const char *name)
 }
 
 void WundergroundNode::setup() {
-  Homie.getLogger() << "WundergroundNode Setup" << endl;
+  Homie.getLogger() << "• WundergroundNode Setup" << endl;
 };
 
 bool WundergroundNode::isConfigured() {
