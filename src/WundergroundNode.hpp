@@ -15,24 +15,23 @@
 
 class WundergroundNode: public HomieNode {
 private:
-  const int  UPDATE_INTERVAL = 600;
+  const boolean IS_METRIC = true;
+  const char * WUNDERGRROUND_API_KEY = "YOUR_API_KEY";
+  const char * WUNDERGRROUND_LANGUAGE = "EN";
+  const char * WUNDERGROUND_COUNTRY = "UK";
+  const char * WUNDERGROUND_CITY = "YOURTOWN";
+  const long WUNDERGROUND_UPDATE = 15; // Default update every 15 minutes
   WundergroundClient *_wuClient;
   WuCurrentWeatherFrame *_wuCurrent;
   WuForecastFrame *_wuForecast;
-  unsigned long _updateInterval;
   unsigned long _lastUpdate;
   bool isConfigured();
 protected:
   virtual void setup() override;
   virtual void loop() override;
-
 public:
   WundergroundNode(const char *name);
-
   void beforeSetup();
-  // Interface HomieNode
-  // virtual bool handleInput(String const &property, HomieRange range, String const &value) override;
-
 };
 
 #endif
