@@ -17,7 +17,6 @@
 // Display & UI
 #include <SSD1306.h>
 #include <OLEDDisplayUi.h>
-#include <OLEDStatusIndicator.hpp>
 
 #define SERIAL_SPEED 115200
 
