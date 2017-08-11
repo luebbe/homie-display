@@ -24,14 +24,14 @@ private:
   WundergroundClient *_wuClient;
   WuCurrentWeatherFrame *_wuCurrent;
   WuForecastFrame *_wuForecast;
-  unsigned long _lastUpdate;
+  unsigned long _nextUpdate;
   bool isConfigured();
 protected:
-  virtual void setup() override;
   virtual void loop() override;
 public:
   WundergroundNode(const char *name);
   void beforeSetup();
+  void setupHandler();
 };
 
 #endif

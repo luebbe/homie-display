@@ -20,7 +20,7 @@ WundergroundNode::WundergroundNode(const char *name)
   _wuClient = new WundergroundClient(IS_METRIC);
   _wuCurrent = new WuCurrentWeatherFrame(_wuClient);
   _wuForecast = new WuForecastFrame(_wuClient);
-  _lastUpdate = 0;
+  _nextUpdate = 0;
 }
 
 void WundergroundNode::beforeSetup()
@@ -33,12 +33,13 @@ void WundergroundNode::beforeSetup()
   wundergroundCountry.setDefaultValue(WUNDERGROUND_COUNTRY);
   wundergroundCity.setDefaultValue(WUNDERGROUND_CITY);
   wundergroundUpdate.setDefaultValue(WUNDERGROUND_UPDATE).setValidator([] (long candidate) {
-    return (candidate >= 10) && (candidate <= 24*6*10);
+    return (candidate >= 10) && (candidate <= 24*6*10); // Update interval etween 10 minutes and 24 hours
   });
 }
 
-void WundergroundNode::setup() {
-  Homie.getLogger() << "• WundergroundNode - Setup" << endl;
+void WundergroundNode::setupHandler() {
+  Homie.getLogger() << "• WundergroundNode - Setuphandler" << endl;
+  _nextUpdate = millis() + 5000;  // Wait 5 seconds before fetching weather underground data for the first time
 };
 
 bool WundergroundNode::isConfigured() {
@@ -47,10 +48,10 @@ bool WundergroundNode::isConfigured() {
 
 void WundergroundNode::loop() {
   if (isConfigured()) {
-    if (millis() - _lastUpdate >= wundergroundUpdate.get() * 60000UL || _lastUpdate == 0) {
+    if (millis() >= _nextUpdate) {
       _wuClient->updateConditions(wundergroundApiKey.get(), wundergroundLanguage.get(), wundergroundCountry.get(), wundergroundCity.get());
       _wuClient->updateForecast(wundergroundApiKey.get(), wundergroundLanguage.get(), wundergroundCountry.get(), wundergroundCity.get());
-      _lastUpdate = millis();
+      _nextUpdate = millis() + wundergroundUpdate.get() * 60000UL;
     }
   }
 };

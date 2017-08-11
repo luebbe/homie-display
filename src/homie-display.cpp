@@ -78,6 +78,7 @@ void loopHandler() {
 void setupHandler() {
   // Called after WiFi is connected
   Homie.getLogger() << "Setuphandler" << endl;
+  wundergroundNode.setupHandler();
 }
 
 void setup() {
