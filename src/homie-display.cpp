@@ -8,7 +8,6 @@
 #define FW_VERSION "1.0.0"
 
 #include <Homie.h>
-#include <NTPClient.h>
 
 #include "homie-node-collection.h"
 #include "StatusNode.hpp"
@@ -26,18 +25,10 @@ const int I2C_DISPLAY_ADDRESS = 0x3c;
 const int SDA_PIN = 12;
 const int SCL_PIN = 13;
 
-// init time client
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "europe.pool.ntp.org"); //, 3600, 60000);
-
-// NTPClient timeClient("europe.pool.ntp.org",2*3600);
-
 // Connected peripherals
 SSD1306Wire display(I2C_DISPLAY_ADDRESS, SDA_PIN, SCL_PIN);
 OtaDisplay ota(&display);
 OLEDDisplayUi ui(&display);
-
-OLEDStatusIndicator statusOverlay; // Overlay statusOverlay for every frame
 
 StatusNode statusNode("Status");
 MqttNode nodeNode1("Test Node 1");
@@ -63,12 +54,9 @@ void onHomieEvent(const HomieEvent& event) {
   }
   // dispatch event
   statusNode.Event(event);
-  statusOverlay.Event(event);
 }
 
 void loopHandler() {
-  timeClient.update();
-  statusOverlay.setStatusText(timeClient.getFormattedTime());
   if (statusNode.isAlert()) {
     stopTransition();
   }
@@ -89,6 +77,7 @@ void setup() {
   ota.setup();
 
   nodeNode1.beforeSetup();
+  statusNode.beforeSetup();
   wundergroundNode.beforeSetup();
 
   // Display and UI
@@ -108,9 +97,6 @@ void setup() {
   Homie.setLoopFunction(loopHandler);
   Homie.setSetupFunction(setupHandler);
   Homie.setup();
-
-  timeClient.setTimeOffset(2*3600); // Zeitzonenoffset als Homie Parameter implementieren
-  timeClient.begin();
 }
 
 void loop() {
