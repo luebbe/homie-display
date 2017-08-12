@@ -27,7 +27,10 @@ private:
   WiFiUDP _ntpUDP;
   NTPClient *_timeClient;
 
-  // Interface OLEDFrame
+  // Interface HomieNode
+  bool handleBroadcast(const String& level, const String& value);
+  
+    // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
 
   // Interface OLEDStatusIndicator
@@ -37,10 +40,6 @@ private:
 
 protected:
   virtual void loop() override;
-
-  // Interface HomieNode
-  bool handleBroadcast(const String& level, const String& value);
-
   
 public:
   StatusNode(const char *name);

@@ -172,7 +172,7 @@ void StatusNode::beforeSetup() {
 
 void StatusNode::setupHandler() {
   Homie.getLogger() << "• StatusNode - Setuphandler" << endl
-                    << "  ◦ Time zone offset: UTC " << timeclientOffset.get() " hours" << endl
+                    << "  ◦ Time zone offset: UTC " << timeclientOffset.get() << " hours" << endl
                     << "  ◦ Update interval : " << timeclientUpdate.get() << " minutes" << endl;
   _timeClient->setTimeOffset(timeclientOffset.get() * 3600UL);
   _timeClient->setUpdateInterval(timeclientUpdate.get() * 60000UL);
