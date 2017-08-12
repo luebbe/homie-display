@@ -21,6 +21,29 @@ StatusNode::StatusNode(const char *name) :
   _timeClient = new NTPClient(_ntpUDP, TC_SERVER);
 };
 
+void StatusNode::beforeSetup() {
+  Homie.getLogger() << "• StatusNode - Before setup" << endl;
+  timeclientOffset.setDefaultValue(TC_TIMEZONEOFFSET);
+  timeclientUpdate.setDefaultValue(TC_UPDATEINTERVAL).setValidator([] (long candidate) {
+    return (candidate >= 10) && (candidate <= 24*6*10); // Update interval etween 10 minutes and 24 hours
+  });
+}
+
+void StatusNode::setupHandler() {
+  Homie.getLogger() << "• StatusNode - Setuphandler" << endl
+                    << "  ◦ Time zone offset: UTC " << timeclientOffset.get() << " hours" << endl
+                    << "  ◦ Update interval : " << timeclientUpdate.get() << " minutes" << endl;
+  _timeClient->setTimeOffset(timeclientOffset.get() * 3600UL);
+  _timeClient->setUpdateInterval(timeclientUpdate.get() * 60000UL);
+  _timeClient->begin();
+};
+
+void StatusNode::loop() {
+  if (_timeClient->update()) {
+    setStatusText(_timeClient->getFormattedTime());
+  }
+};
+
 bool StatusNode::handleBroadcast(const String& level, const String& value) {
   if (level.equals("alert")) {
     _alert = true;
@@ -161,26 +184,3 @@ void StatusNode::drawWifiStrength(OLEDDisplay& display) {
     }
   }
 }
-
-void StatusNode::beforeSetup() {
-  Homie.getLogger() << "• StatusNode - Before setup" << endl;
-  timeclientOffset.setDefaultValue(TC_TIMEZONEOFFSET);
-  timeclientUpdate.setDefaultValue(TC_UPDATEINTERVAL).setValidator([] (long candidate) {
-    return (candidate >= 10) && (candidate <= 24*6*10); // Update interval etween 10 minutes and 24 hours
-  });
-}
-
-void StatusNode::setupHandler() {
-  Homie.getLogger() << "• StatusNode - Setuphandler" << endl
-                    << "  ◦ Time zone offset: UTC " << timeclientOffset.get() << " hours" << endl
-                    << "  ◦ Update interval : " << timeclientUpdate.get() << " minutes" << endl;
-  _timeClient->setTimeOffset(timeclientOffset.get() * 3600UL);
-  _timeClient->setUpdateInterval(timeclientUpdate.get() * 60000UL);
-  _timeClient->begin();
-};
-
-void StatusNode::loop() {
-  if (_timeClient->update()) {
-    setStatusText(_timeClient->getFormattedTime());
-  }
-};
