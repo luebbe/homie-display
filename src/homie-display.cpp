@@ -52,7 +52,7 @@ void onHomieEvent(const HomieEvent& event) {
   break;
   }
   // dispatch event
-  statusNode.Event(event);
+  statusNode.event(event);
 }
 
 void loopHandler() {
@@ -65,6 +65,7 @@ void loopHandler() {
 void setupHandler() {
   // Called after WiFi is connected
   Homie.getLogger() << "Setuphandler" << endl;
+  statusNode.setupHandler();
   wundergroundNode.setupHandler();
 }
 

@@ -30,7 +30,7 @@ bool StatusNode::handleBroadcast(const String& level, const String& value) {
   return false;
 }
 
-void StatusNode::Event(const HomieEvent& event) {
+void StatusNode::event(const HomieEvent& event) {
   _cfgmode = false;
   switch (event.type) {
   case HomieEventType::STANDALONE_MODE:
@@ -170,9 +170,9 @@ void StatusNode::beforeSetup() {
   });
 }
 
-void StatusNode::setup() {
-  Homie.getLogger() << "• StatusNode - Setup" << endl
-                    << "  ◦ Time zone offset: UTC" << timeclientOffset.get() << endl
+void StatusNode::setupHandler() {
+  Homie.getLogger() << "• StatusNode - Setuphandler" << endl
+                    << "  ◦ Time zone offset: UTC " << timeclientOffset.get() " hours" << endl
                     << "  ◦ Update interval : " << timeclientUpdate.get() << " minutes" << endl;
   _timeClient->setTimeOffset(timeclientOffset.get() * 3600UL);
   _timeClient->setUpdateInterval(timeclientUpdate.get() * 60000UL);

@@ -27,26 +27,27 @@ private:
   WiFiUDP _ntpUDP;
   NTPClient *_timeClient;
 
-  void drawWifiStrength(OLEDDisplay& display);
-
-protected:
-  virtual void setup() override;
-  virtual void loop() override;
-
-public:
-  StatusNode(const char *name);
-
-  // Interface HomieNode
-  void Event(const HomieEvent& event);
-  bool handleBroadcast(const String& level, const String& value);
-
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
 
   // Interface OLEDStatusIndicator
   virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx);
   
+  void drawWifiStrength(OLEDDisplay& display);
+
+protected:
+  virtual void loop() override;
+
+  // Interface HomieNode
+  bool handleBroadcast(const String& level, const String& value);
+
+  
+public:
+  StatusNode(const char *name);
+
   void beforeSetup();
+  void setupHandler();
+  void event(const HomieEvent& event);
   
   void setStatusText(String const value) {
     _statusText = value;
