@@ -14,18 +14,26 @@
 
 class MqttNode: public HomieNode, public OLEDIndexFrame {
 private:
+  const char *MQTT_SERVER = "MQTT_SERVER";
+  const char *MQTT_TOPIC = "MQTT_TOPIC";
   const char *_name;
-protected:
-  virtual void setup() override;
-  virtual void loop() override;
-
+  WiFiClient _wifiClient;
+  PubSubClient *_mqtt;
+  
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
-
+  
+  void reconnect();
+  
+protected:
+  virtual void loop() override;
+  void callback(char* topic, byte* payload, unsigned int length);
+  
 public:
   MqttNode(const char *name);
 
   void beforeSetup();
+  void setupHandler();
 };
 
 #endif

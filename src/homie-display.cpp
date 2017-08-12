@@ -30,7 +30,7 @@ OtaDisplay ota(&display);
 OLEDDisplayUi ui(&display);
 
 StatusNode statusNode("Status");
-MqttNode nodeNode1("Test Node 1");
+MqttNode mqttNode("MqttClient");
 WundergroundNode wundergroundNode("Wunderground");
 
 void resumeTransition() {
@@ -66,6 +66,7 @@ void setupHandler() {
   // Called after WiFi is connected
   Homie.getLogger() << "Setuphandler" << endl;
   statusNode.setupHandler();
+  mqttNode.setupHandler();
   wundergroundNode.setupHandler();
 }
 
@@ -76,8 +77,8 @@ void setup() {
   welcome();
   ota.setup();
 
-  nodeNode1.beforeSetup();
   statusNode.beforeSetup();
+  mqttNode.beforeSetup();
   wundergroundNode.beforeSetup();
 
   // Display and UI

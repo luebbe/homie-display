@@ -8,22 +8,54 @@
 #include <Homie.hpp>
 #include "MqttNode.hpp"
 
+HomieSetting<const char*> mqttServer("MqttServer", "The MQTT server to which this node shall connect");
 HomieSetting<const char*> mqttTopic("MqttTopic", "The MQTT topic to which this node shall listen");
-
-const char * MQTT_TOPIC = "MQTT_TOPIC";
 
 MqttNode::MqttNode(const char *name) :
   HomieNode(name, "test")
 {
   _name = name;
-  mqttTopic.setDefaultValue(MQTT_TOPIC);
+  _mqtt = new PubSubClient(_wifiClient);
 }
 
 void MqttNode::beforeSetup() {
   // This has to be called before Homie.setup, because otherwise the default Values will
   // override the values which were already read from config.json
-  Homie.getLogger() << "• MqttNode Before Setup" << endl;
+  Homie.getLogger() << "• MqttNode - Before Setup" << endl;
+  mqttServer.setDefaultValue(MQTT_SERVER);
   mqttTopic.setDefaultValue(MQTT_TOPIC);
+}
+
+void MqttNode::setupHandler() {
+  Homie.getLogger() << "• MqttNode - Setuphandler" << endl;
+  if (!_mqtt->connected()) {
+    reconnect();
+  }
+};
+
+void MqttNode::callback(char* topic, byte* payload, unsigned int length) {
+  Homie.getLogger() << "Message arrived [" << topic << "] " << endl;
+}
+
+void MqttNode::reconnect() {
+  if (mqttServer.wasProvided() && mqttTopic.wasProvided()) {
+    Homie.getLogger() << "◦ Attempting MQTT connection...";
+
+    _mqtt->setServer(mqttServer.get(), 1883);
+    // _mqtt->setCallback(
+    //   [this](char *topic, byte *payload, unsigned int length) {
+    //   callback(topic, payload, length);
+    // });
+
+    if (_mqtt->connect(_name)) {
+      Homie.getLogger() << " Connected" << endl;
+      if (mqttTopic.wasProvided()) {
+        _mqtt->subscribe("mqttTopic.get()");
+      }
+    }
+    else 
+      Homie.getLogger() << " Failed" << endl;
+  }
 }
 
 // Interface OLEDFrame
@@ -44,13 +76,9 @@ void MqttNode::drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16
   hum.concat("% rel");
 };
 
-void MqttNode::setup() {
-  Homie.getLogger() << "MqttNode Setup" << endl;
-  if (mqttTopic.wasProvided()) {
-    Homie.getLogger() << "Topic:" << mqttTopic.get() << endl;
-  }
-};
-
 void MqttNode::loop() {
-
-};
+  if (!_mqtt->connected()) {
+    reconnect();
+  }
+  _mqtt->loop();
+}
