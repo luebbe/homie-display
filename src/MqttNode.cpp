@@ -28,6 +28,12 @@ void MqttNode::beforeSetup() {
 
 void MqttNode::setupHandler() {
   Homie.getLogger() << "• MqttNode - Setuphandler" << endl;
+
+  _mqtt->setCallback(
+    [this](char *topic, byte *payload, unsigned int length)
+    {this->callback(topic, payload, length);}
+  );
+
   if (!_mqtt->connected()) {
     reconnect();
   }
@@ -39,18 +45,17 @@ void MqttNode::callback(char* topic, byte* payload, unsigned int length) {
 
 void MqttNode::reconnect() {
   if (mqttServer.wasProvided() && mqttTopic.wasProvided()) {
-    Homie.getLogger() << "◦ Attempting MQTT connection...";
+    Homie.getLogger() << "  ◦ Connecting to: " << mqttServer.get();
 
     _mqtt->setServer(mqttServer.get(), 1883);
-    // _mqtt->setCallback(
-    //   [this](char *topic, byte *payload, unsigned int length) {
-    //   callback(topic, payload, length);
-    // });
-
     if (_mqtt->connect(_name)) {
-      Homie.getLogger() << " Connected" << endl;
+      Homie.getLogger() << " OK" << endl;
       if (mqttTopic.wasProvided()) {
-        _mqtt->subscribe("mqttTopic.get()");
+        Homie.getLogger() << "  ◦ Subscribing to: " << mqttTopic.get();
+        if (_mqtt->subscribe(mqttTopic.get()))
+          Homie.getLogger() << " OK" << endl;
+        else
+          Homie.getLogger() << " Failed" << endl;
       }
     }
     else 
