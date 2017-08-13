@@ -5,7 +5,6 @@
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#include <Homie.hpp>
 #include "MqttNode.hpp"
 
 HomieSetting<const char*> mqttServer("MqttServer", "The MQTT server to which this node shall connect");
@@ -39,8 +38,38 @@ void MqttNode::setupHandler() {
   }
 };
 
+bool has_suffix(const std::string &str, const std::string &suffix)
+{
+  return str.size() >= suffix.size() &&
+    str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
 void MqttNode::callback(char* topic, byte* payload, unsigned int length) {
-  Homie.getLogger() << "Message arrived [" << topic << "] " << endl;
+  Homie.getLogger() << "Mqtt message [" << topic << "][" << length << "] byte" << endl;
+  // for (int i = 0; i < length; i++) {
+  //   Serial.print((char)payload[i]);
+  // }
+  if (has_suffix(topic, "$type")) {
+    // _name = "Outdoor";
+    _name = "";
+    for (int i = 0; i < length; i++) {
+      _name = _name + (char)payload[i];
+    }
+  }    
+  if (has_suffix(topic, "temperature")) {
+    _temp = "";
+    for (int i = 0; i < length; i++) {
+      _temp = _temp + (char)payload[i];
+    }
+    _temp.concat("°C");
+  }
+  if (has_suffix(topic, "humidity")) {
+    _humid = "";
+    for (int i = 0; i < length; i++) {
+      _humid = _humid + (char)payload[i];
+    }
+    _humid.concat("%");
+  }
 }
 
 void MqttNode::reconnect() {
@@ -48,7 +77,7 @@ void MqttNode::reconnect() {
     Homie.getLogger() << "  ◦ Connecting to: " << mqttServer.get();
 
     _mqtt->setServer(mqttServer.get(), 1883);
-    if (_mqtt->connect(_name)) {
+    if (_mqtt->connect(Homie.getConfiguration().deviceId)) {
       Homie.getLogger() << " OK" << endl;
       if (mqttTopic.wasProvided()) {
         Homie.getLogger() << "  ◦ Subscribing to: " << mqttTopic.get();
@@ -68,17 +97,12 @@ void MqttNode::drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.drawString(x, 0, _name);
-  // + ':' + String(x) + ' ' + String(y));
 
-  String temp("22,5");
-  String hum("55.5");
-
-  display.setFont(ArialMT_Plain_24);
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  temp.concat("°C");
-  display.drawString(63 + x, 16 + y, temp);
+//  display.setFont(ArialMT_Plain_24);
   display.setFont(ArialMT_Plain_16);
-  hum.concat("% rel");
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.drawString(63 + x, 16 + y, _temp);
+  display.drawString(63 + x, 32 + y, _humid);
 };
 
 void MqttNode::loop() {
