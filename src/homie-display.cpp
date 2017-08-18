@@ -82,8 +82,10 @@ void setup() {
   wundergroundNode.beforeSetup();
 
   // Display and UI
-  ui.setTargetFPS(10);
+  ui.setTargetFPS(30);
   ui.setFrameAnimation(SLIDE_LEFT);
+  ui.setTimePerFrame(5000);
+  ui.setTimePerTransition(1000);
   ui.disableAutoTransition();
   ui.disableAllIndicators();
   ui.init();

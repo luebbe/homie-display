@@ -9,6 +9,7 @@
 
 HomieSetting<const char*> mqttServer("MqttServer", "The MQTT server to which this node shall connect");
 HomieSetting<const char*> mqttTopic("MqttTopic", "The MQTT topic to which this node shall listen");
+HomieSetting<const char*> mqttTitle("MqttTitle", "The title that shall be shown on the frame");
 
 MqttNode::MqttNode(const char *name) :
   HomieNode(name, "test")
@@ -23,10 +24,15 @@ void MqttNode::beforeSetup() {
   Homie.getLogger() << "• MqttNode - Before Setup" << endl;
   mqttServer.setDefaultValue(MQTT_SERVER);
   mqttTopic.setDefaultValue(MQTT_TOPIC);
+  mqttTitle.setDefaultValue("");
 }
 
 void MqttNode::setupHandler() {
   Homie.getLogger() << "• MqttNode - Setuphandler" << endl;
+
+  if (mqttTitle.wasProvided()) {
+    _name = mqttTitle.get();
+  }
 
   _mqtt->setCallback(
     [this](char *topic, byte *payload, unsigned int length)
@@ -49,13 +55,15 @@ void MqttNode::callback(char* topic, byte* payload, unsigned int length) {
   // for (int i = 0; i < length; i++) {
   //   Serial.print((char)payload[i]);
   // }
-  if (has_suffix(topic, "$type")) {
-    // _name = "Outdoor";
-    _name = "";
-    for (int i = 0; i < length; i++) {
-      _name = _name + (char)payload[i];
-    }
-  }    
+  if (!mqttTitle.wasProvided()) {
+    if (has_suffix(topic, "$type")) {
+      _name = "";
+      for (int i = 0; i < length; i++) {
+        _name = _name + (char)payload[i];
+      }
+    }    
+  }
+
   if (has_suffix(topic, "temperature")) {
     _temp = "";
     for (int i = 0; i < length; i++) {
