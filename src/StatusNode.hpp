@@ -22,6 +22,8 @@ private:
   bool _mqtt;
   bool _wifi;
   bool _alert;
+  long _milliseconds;
+  long _lasttick;
   String _statusText;
   String _alertMessage;
   WiFiUDP _ntpUDP;

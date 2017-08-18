@@ -18,6 +18,8 @@ StatusNode::StatusNode(const char *name) :
   _mqtt = false;  
   _cfgmode = false; 
   _alert = false;
+  _milliseconds = 0;
+  _lasttick = 0;
   _timeClient = new NTPClient(_ntpUDP, TC_SERVER);
 };
 
@@ -107,10 +109,8 @@ void StatusNode::event(const HomieEvent& event) {
 // Interface OLEDFrame
 void StatusNode::drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) {
   uint32_t now = millis();
-
-  // display.setFont(ArialMT_Plain_10);
-  // display.setTextAlignment(TEXT_ALIGN_LEFT);
-  // display.drawString(x, 0, _name);
+  _milliseconds += (now - _lasttick);
+  _lasttick = now;
 
   if (_cfgmode) {
   }
@@ -119,12 +119,12 @@ void StatusNode::drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int
       _statusText = "Connecting to Mqtt";
   } else {
     _statusText = "Connecting to WiFi";
-    uint8_t cycle3 = (now >> 4) % 3;
-    display.drawXbm(46, 30, 8, 8, cycle3 == 0 ? activeSymbol : inactiveSymbol);
-    display.drawXbm(60, 30, 8, 8, cycle3 == 1 ? activeSymbol : inactiveSymbol);
-    display.drawXbm(74, 30, 8, 8, cycle3 == 2 ? activeSymbol : inactiveSymbol);
+    uint8_t triCycle = (_milliseconds >> 9) % 3;
+    display.drawXbm(46, 30, 8, 8, triCycle == 0 ? activeSymbol : inactiveSymbol);
+    display.drawXbm(60, 30, 8, 8, triCycle == 1 ? activeSymbol : inactiveSymbol);
+    display.drawXbm(74, 30, 8, 8, triCycle == 2 ? activeSymbol : inactiveSymbol);
   }
-
+  
   // draw status text at center
   if (Homie.isConnected()) {
     display.setFont(ArialMT_Plain_24);
