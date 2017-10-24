@@ -5,3 +5,5 @@
 lib/homie-esp8266-2.0
 data/homie
 .vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/settings.json
