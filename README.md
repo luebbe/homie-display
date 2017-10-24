@@ -19,8 +19,10 @@ A friend of mine printed this cute little case for me: [Desktop Widget](https://
 <img src="./images/Case_Front1.jpg" height="200">
 Front view showing current weather
 
+
 <img src="./images/Case_Front2.jpg" height="200">
 Front view showing three day forecast
+
 
 <img src="./images/Case_Rear.jpg" height="200">
 Rear view
