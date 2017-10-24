@@ -104,13 +104,13 @@ void MqttNode::reconnect() {
 void MqttNode::drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) {
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(x, 0, _name);
+  display.drawString(64 + x, y, _name);
 
 //  display.setFont(ArialMT_Plain_24);
   display.setFont(ArialMT_Plain_16);
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.drawString(63 + x, 16 + y, _temp);
-  display.drawString(63 + x, 32 + y, _humid);
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.drawString(     x, 11 + y, _temp);
+  display.drawString(32 + x, 32 + y, _humid);
 };
 
 void MqttNode::loop() {

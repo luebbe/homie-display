@@ -15,9 +15,9 @@ void WuForecastFrame::drawFrame(
   OLEDDisplayUiState& state,
   int16_t x, int16_t y)
 {
-  drawForecastDetails(display, x, y, 0);
-  drawForecastDetails(display, x + 44, y, 2);
-  drawForecastDetails(display, x + 88, y, 4);
+  drawForecastDetails(display, x, y, 2);
+  drawForecastDetails(display, x + 44, y, 4);
+  drawForecastDetails(display, x + 88, y, 6);
 }
 
 void WuForecastFrame::drawForecastDetails(
