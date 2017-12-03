@@ -17,7 +17,7 @@ install:
     - platformio lib -g install https://github.com/bblanchon/ArduinoJson.git#v5.10.1
     - platformio lib -g install https://github.com/luebbe/homie-ota.git
     - platformio lib -g install https://github.com/euphi/esp8266-oled-ssd1306.git
-    - platformio lib -g install ESP8266_SSD1306 U8G2
+    - platformio lib -g install NTPClient
 
 script:
     - platformio ci --lib="." --board=esp12e
