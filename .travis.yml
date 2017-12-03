@@ -8,15 +8,16 @@ cache:
         - "~/.platformio"
 
 env:
-     - PLATFORMIO_CI_SRC=src
+    - PLATFORMIO_CI_SRC=src/homie-display.cpp PLATFORMIO_BUILD_FLAGS="-D display=DISPLAY_SSD1306"
 
 install:
     - pip install -U platformio
-
-    - wget https://github.com/marvinroger/homie-esp8266/archive/develop.zip -O /tmp/homie2.zip
-    - unzip /tmp/homie2.zip -d /tmp
-
-    - platformio lib -g install "ArduinoJson" "AsyncMqttClient" "Bounce2" "Adafruit Unified Sensor" "Adafruit BME280 Library" "ESP8266_SSD1306" "NTPClient"
+    - export PLATFORMIO_BUILD_FLAGS="-D SERIAL_SPEED=74880"
+    - platformio lib -g install https://github.com/marvinroger/homie-esp8266.git#v2.0.0-beta.1
+    - platformio lib -g install https://github.com/bblanchon/ArduinoJson.git#v5.10.1
+    - platformio lib -g install https://github.com/luebbe/homie-ota.git
+    - platformio lib -g install https://github.com/euphi/esp8266-oled-ssd1306.git
+    - platformio lib -g install ESP8266_SSD1306 U8G2
 
 script:
-    - platformio ci --lib="/tmp/homie-esp8266-develop" --board=nodemcuv2
+    - platformio ci --lib="." --board=esp12e
