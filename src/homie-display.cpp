@@ -9,7 +9,6 @@
 
 #include <Homie.h>
 
-// #include "homie-node-collection.h"
 #include "ota.hpp"
 #include "welcome.hpp"
 #include "StatusNode.hpp"
@@ -21,16 +20,17 @@
 #include <OLEDDisplayUi.h>
 
 const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int SDA_PIN = 5;
-const int SCL_PIN = 4;
+const int PIN_SDA = 5;
+const int PIN_SCL = 4;
 // const int SDA_PIN = 12;
 // const int SCL_PIN = 13;
 
 // Connected peripherals
-SSD1306Wire display(I2C_DISPLAY_ADDRESS, SDA_PIN, SCL_PIN);
+SSD1306Wire display(I2C_DISPLAY_ADDRESS, PIN_SDA, PIN_SCL);
+OLEDDisplayUi ui(&display);
+
 OtaDisplaySSD1306 ota(display, NULL);
 WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
-OLEDDisplayUi ui(&display);
 
 StatusNode statusNode("Status");
 MqttNode mqttNode("MqttClient");
