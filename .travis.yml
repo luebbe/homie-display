@@ -17,7 +17,7 @@ install:
     - platformio lib -g install https://github.com/bblanchon/ArduinoJson.git#v5.10.1
     - platformio lib -g install https://github.com/luebbe/homie-ota.git
     - platformio lib -g install https://github.com/euphi/esp8266-oled-ssd1306.git
-    - platformio lib -g install NTPClient PubSubClient
+    - platformio lib -g install JSonStreamingParser NTPClient PubSubClient
 
 script:
     - platformio ci --lib="." --lib="lib/WundergroundClient" --board=esp12e
