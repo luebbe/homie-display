@@ -21,4 +21,4 @@ install:
 
 script:
 #    - platformio ci --lib="." --lib="lib/WundergroundClient" --board=esp12e
-    - platformio ci --project-conf=platformio.ini
+    - platformio ci --lib="." --lib="lib/WundergroundClient" --project-conf=platformio.ini
