@@ -20,4 +20,4 @@ install:
     - platformio lib -g install NTPClient PubSubClient
 
 script:
-    - platformio ci --lib="lib/WundergroundClient" --board=esp12e
+    - platformio ci --lib="." --lib="lib/WundergroundClient" --board=esp12e
