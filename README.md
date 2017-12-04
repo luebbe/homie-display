@@ -23,6 +23,7 @@ It uses files copied from [ESP8266 Weather Station](https://github.com/squix78/e
 
 ## Configuration
 The following parameters are used to configure the display
+
 Node | Parameter | Type | Usage
 ---- | --------- | ---- | -----
 MqttNode            | MqttServer          | string      | The MQTT server to which this node shall connect|
