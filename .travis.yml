@@ -12,13 +12,6 @@ env:
 
 install:
     - pip install -U platformio
-#    - export PLATFORMIO_BUILD_FLAGS="-D SERIAL_SPEED=74880"
-#    - platformio lib -g install https://github.com/marvinroger/homie-esp8266.git#v2.0.0-beta.1
-#    - platformio lib -g install https://github.com/bblanchon/ArduinoJson.git#v5.10.1
-#    - platformio lib -g install https://github.com/luebbe/homie-ota.git
-#    - platformio lib -g install https://github.com/euphi/esp8266-oled-ssd1306.git
-#    - platformio lib -g install JSonStreamingParser NTPClient PubSubClient
 
 script:
-#    - platformio ci --lib="." --lib="lib/WundergroundClient" --board=esp12e
     - platformio ci --lib="." --lib="lib/WundergroundClient" --project-conf=platformio.ini
