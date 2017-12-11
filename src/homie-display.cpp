@@ -8,12 +8,21 @@
 #define FW_VERSION "1.0.0"
 
 #include <Homie.h>
+#include <NTPClient.h>
 
 #include "ota.hpp"
 #include "welcome.hpp"
 #include "StatusNode.hpp"
 #include "MqttNode.hpp"
 #include "WundergroundNode.hpp"
+
+// NTP Client
+const char *TC_SERVER = "europe.pool.ntp.org";
+const long TC_TIMEZONEOFFSET = 0;  // Default UTC
+const long TC_UPDATEINTERVAL = 15; // Default update every 15 minutes
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, TC_SERVER);
 
 // Display & UI
 #include <SSD1306.h>
@@ -35,6 +44,9 @@ WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 StatusNode statusNode("Status");
 MqttNode mqttNode("MqttClient");
 WundergroundNode wundergroundNode("Wunderground");
+
+HomieSetting<long> timeclientOffset("TcOffset", "The time zone offset for the NTP client in hours (-12 .. 12");
+HomieSetting<long> timeclientUpdate("TcUpdate", "The update interval in minutes for the NTP client (must be at least 10 minutes)");
 
 void resumeTransition()
 {
@@ -64,6 +76,9 @@ void onHomieEvent(const HomieEvent &event)
 
 void loopHandler()
 {
+  if (timeClient.update()) {
+    statusNode.setStatusText(timeClient.getFormattedTime());
+  }
   if (statusNode.isAlert())
   {
     stopTransition();
@@ -74,8 +89,13 @@ void loopHandler()
 void setupHandler()
 {
   // Called after WiFi is connected
-  Homie.getLogger() << "Setuphandler" << endl;
-  statusNode.setupHandler();
+  Homie.getLogger() << "Setuphandler" << endl
+                    << "• Time zone offset: UTC " << timeclientOffset.get() << " hours" << endl
+                    << "• Update interval : " << timeclientUpdate.get() << " minutes" << endl;
+  timeClient.setTimeOffset(timeclientOffset.get() * 3600UL);
+  timeClient.setUpdateInterval(timeclientUpdate.get() * 60000UL);
+  timeClient.begin();
+
   mqttNode.setupHandler();
   wundergroundNode.setupHandler();
 }
@@ -89,9 +109,13 @@ void setup()
   welcome.show();
   ota.setup();
 
-  statusNode.beforeSetup();
   mqttNode.beforeSetup();
   wundergroundNode.beforeSetup();
+
+  timeclientOffset.setDefaultValue(TC_TIMEZONEOFFSET);
+  timeclientUpdate.setDefaultValue(TC_UPDATEINTERVAL).setValidator([](long candidate) {
+    return (candidate >= 10) && (candidate <= 24 * 6 * 10); // Update interval etween 10 minutes and 24 hours
+  });
 
   // Display and UI
   ui.setTargetFPS(30);

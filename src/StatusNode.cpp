@@ -8,9 +8,6 @@
 #include <Homie.hpp>
 #include "StatusNode.hpp"
 
-HomieSetting<long> timeclientOffset("TcOffset", "The time zone offset for the NTP client in hours (-12 .. 12");
-HomieSetting<long> timeclientUpdate("TcUpdate", "The update interval in minutes for the NTP client (must be at least 10 minutes)");
-
 StatusNode::StatusNode(const char *name) :
   HomieNode(name, "test") {
   _name = name;
@@ -20,30 +17,6 @@ StatusNode::StatusNode(const char *name) :
   _alert = false;
   _milliseconds = 0;
   _lasttick = 0;
-  _timeClient = new NTPClient(_ntpUDP, TC_SERVER);
-};
-
-void StatusNode::beforeSetup() {
-  Homie.getLogger() << "• StatusNode - Before setup" << endl;
-  timeclientOffset.setDefaultValue(TC_TIMEZONEOFFSET);
-  timeclientUpdate.setDefaultValue(TC_UPDATEINTERVAL).setValidator([] (long candidate) {
-    return (candidate >= 10) && (candidate <= 24*6*10); // Update interval etween 10 minutes and 24 hours
-  });
-}
-
-void StatusNode::setupHandler() {
-  Homie.getLogger() << "• StatusNode - Setuphandler" << endl
-                    << "  ◦ Time zone offset: UTC " << timeclientOffset.get() << " hours" << endl
-                    << "  ◦ Update interval : " << timeclientUpdate.get() << " minutes" << endl;
-  _timeClient->setTimeOffset(timeclientOffset.get() * 3600UL);
-  _timeClient->setUpdateInterval(timeclientUpdate.get() * 60000UL);
-  _timeClient->begin();
-};
-
-void StatusNode::loop() {
-  if (_timeClient->update()) {
-    setStatusText(_timeClient->getFormattedTime());
-  }
 };
 
 bool StatusNode::handleBroadcast(const String& level, const String& value) {
