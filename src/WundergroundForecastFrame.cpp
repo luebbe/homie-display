@@ -7,13 +7,13 @@
 
 #include "WundergroundForecastFrame.hpp"
 
-WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient)
-  : WuFrame (wuClient) {}
+WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient, NTPClient timeClient)
+    : WuFrame(wuClient, timeClient) {}
 
 void WuForecastFrame::drawFrame(
-  OLEDDisplay &display,
-  OLEDDisplayUiState& state,
-  int16_t x, int16_t y)
+    OLEDDisplay &display,
+    OLEDDisplayUiState &state,
+    int16_t x, int16_t y)
 {
   drawForecastDetails(display, x, y, 2);
   drawForecastDetails(display, x + 44, y, 4);
@@ -21,9 +21,9 @@ void WuForecastFrame::drawFrame(
 }
 
 void WuForecastFrame::drawForecastDetails(
-  OLEDDisplay &display,
-  int x, int y,
-  int dayIndex)
+    OLEDDisplay &display,
+    int x, int y,
+    int dayIndex)
 {
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_10);
@@ -35,7 +35,6 @@ void WuForecastFrame::drawForecastDetails(
   display.drawString(x + 20, y + 12, _wuClient->getForecastIcon(dayIndex));
 
   display.setFont(ArialMT_Plain_10);
-  display.drawString(x + 20, y + 34, _wuClient->getForecastLowTemp(dayIndex) + "/"
-                                    + _wuClient->getForecastHighTemp(dayIndex));
+  display.drawString(x + 20, y + 34, _wuClient->getForecastLowTemp(dayIndex) + "/" + _wuClient->getForecastHighTemp(dayIndex));
   display.setTextAlignment(TEXT_ALIGN_LEFT);
 }

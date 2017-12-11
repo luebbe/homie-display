@@ -8,13 +8,13 @@
 
 #include "WundergroundCurrentWeatherFrame.hpp"
 
-WuCurrentWeatherFrame::WuCurrentWeatherFrame(WundergroundClient *wuClient)
-  : WuFrame(wuClient) {}
+WuCurrentWeatherFrame::WuCurrentWeatherFrame(WundergroundClient *wuClient, NTPClient timeClient)
+    : WuFrame(wuClient, timeClient) {}
 
 void WuCurrentWeatherFrame::drawFrame(
-  OLEDDisplay &display,
-  OLEDDisplayUiState& state,
-  int16_t x, int16_t y)
+    OLEDDisplay &display,
+    OLEDDisplayUiState &state,
+    int16_t x, int16_t y)
 {
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
