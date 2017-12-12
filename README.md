@@ -6,7 +6,7 @@
 
 Several Homie node(s) that wrap different data sources and show them on an OLED display.
 This firmware currently contains four frames
-* A status frame showing MQTT/Wifi status upon initializaion and the current time when everything is up and running
+* A status frame showing MQTT/Wifi status upon initialization and the current time when everything is up and running
 * The current weather for a weather station that you have configured, fetched via [Weather Underground](https://www.wunderground.com/)
 * A three day weather forecast for the same weather station
 * Temperature and humidity fetched from a mqtt server using data as defined in my [Homie Node Collection](https://github.com/luebbe/homie-node-collection)
