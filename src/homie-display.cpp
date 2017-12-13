@@ -5,7 +5,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.0"
+#define FW_VERSION "1.0.1"
 
 #include <Homie.h>
 #include <NTPClient.h>
@@ -41,7 +41,7 @@ OLEDDisplayUi ui(&display);
 OtaDisplaySSD1306 ota(display, NULL);
 WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
-StatusNode statusNode("Status");
+StatusNode statusNode("Status", FW_NAME, FW_VERSION);
 MqttNode mqttNode("MqttClient");
 WundergroundNode wundergroundNode("Wunderground", timeClient);
 
@@ -127,9 +127,6 @@ void setup()
   ui.init();
   display.flipScreenVertically();
   display.setColor(WHITE);
-  display.setFont(ArialMT_Plain_10);
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.drawString(64, 16, (String)FW_NAME + " " + (String)FW_VERSION);
   display.display();
 
   Homie_setFirmware(FW_NAME, FW_VERSION);

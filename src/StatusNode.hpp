@@ -14,6 +14,8 @@
 class StatusNode: public HomieNode, public OLEDIndexFrame {
 private:
   const char *_name;
+  const char *_fw_name;
+  const char *_fw_version;
   bool _cfgmode;
   bool _mqtt;
   bool _wifi;
@@ -35,7 +37,7 @@ private:
   void drawWifiStrength(OLEDDisplay& display);
 
 public:
-  StatusNode(const char *name);
+  StatusNode(const char *name, const char *fw_name, const char *fw_version);
 
   void event(const HomieEvent& event);
   
