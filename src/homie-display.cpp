@@ -31,8 +31,8 @@ NTPClient timeClient(ntpUDP, TC_SERVER);
 const int I2C_DISPLAY_ADDRESS = 0x3c;
 const int PIN_SDA = 5;
 const int PIN_SCL = 4;
-// const int SDA_PIN = 12;
-// const int SCL_PIN = 13;
+// const int PIN_SDA = 12;
+// const int PIN_SCL = 13;
 
 // Connected peripherals
 SSD1306Wire display(I2C_DISPLAY_ADDRESS, PIN_SDA, PIN_SCL);
