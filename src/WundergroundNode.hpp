@@ -9,6 +9,8 @@
 #define SRC_WUNDERGROUNDNODE_H_
 
 #include <HomieNode.hpp>
+#include <NTPClient.h>
+
 #include "WundergroundClient.h"
 #include "WundergroundCurrentWeatherFrame.hpp"
 #include "WundergroundForecastFrame.hpp"
@@ -29,7 +31,7 @@ private:
 protected:
   virtual void loop() override;
 public:
-  WundergroundNode(const char *name);
+  WundergroundNode(const char *name, NTPClient timeClient);
   void beforeSetup();
   void setupHandler();
 };

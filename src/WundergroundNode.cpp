@@ -9,17 +9,18 @@
 #include "WundergroundNode.hpp"
 
 // Wunderground Settings
-HomieSetting<const char*> wundergroundApiKey("WuApiKey", "Your weather underground API key");
-HomieSetting<const char*> wundergroundLanguage("WuLanguage", "The language in which you want to retrieve the weather underground data");
-HomieSetting<const char*> wundergroundCountry("WuCountry", "The country in which your citie lies");
-HomieSetting<const char*> wundergroundCity("WuCity", "The city for which you want to retrieve the weather underground data");
+HomieSetting<const char *> wundergroundApiKey("WuApiKey", "Your weather underground API key");
+HomieSetting<const char *> wundergroundLanguage("WuLanguage", "The language in which you want to retrieve the weather underground data");
+HomieSetting<const char *> wundergroundCountry("WuCountry", "The country in which your citie lies");
+HomieSetting<const char *> wundergroundCity("WuCity", "The city for which you want to retrieve the weather underground data");
 HomieSetting<long> wundergroundUpdate("WuUpdate", "The update interval in minutes for weather underground (must be at least 10 minutes)");
 
-WundergroundNode::WundergroundNode(const char *name)
-: HomieNode(name, "Wunderground") {
+WundergroundNode::WundergroundNode(const char *name, NTPClient timeClient)
+    : HomieNode(name, "Wunderground")
+{
   _wuClient = new WundergroundClient(IS_METRIC);
-  _wuCurrent = new WuCurrentWeatherFrame(_wuClient);
-  _wuForecast = new WuForecastFrame(_wuClient);
+  _wuCurrent = new WuCurrentWeatherFrame(_wuClient, timeClient);
+  _wuForecast = new WuForecastFrame(_wuClient, timeClient);
   _nextUpdate = 0;
 }
 
@@ -32,23 +33,28 @@ void WundergroundNode::beforeSetup()
   wundergroundLanguage.setDefaultValue(WUNDERGRROUND_LANGUAGE);
   wundergroundCountry.setDefaultValue(WUNDERGROUND_COUNTRY);
   wundergroundCity.setDefaultValue(WUNDERGROUND_CITY);
-  wundergroundUpdate.setDefaultValue(WUNDERGROUND_UPDATE).setValidator([] (long candidate) {
-    return (candidate >= 10) && (candidate <= 24*6*10); // Update interval etween 10 minutes and 24 hours
+  wundergroundUpdate.setDefaultValue(WUNDERGROUND_UPDATE).setValidator([](long candidate) {
+    return (candidate >= 10) && (candidate <= 24 * 6 * 10); // Update interval etween 10 minutes and 24 hours
   });
 }
 
-void WundergroundNode::setupHandler() {
+void WundergroundNode::setupHandler()
+{
   Homie.getLogger() << "• WundergroundNode - Setuphandler" << endl;
-  _nextUpdate = millis() + 5000;  // Wait 5 seconds before fetching weather underground data for the first time
+  _nextUpdate = millis() + 5000; // Wait 5 seconds before fetching weather underground data for the first time
 };
 
-bool WundergroundNode::isConfigured() {
+bool WundergroundNode::isConfigured()
+{
   return wundergroundApiKey.wasProvided() && wundergroundCity.wasProvided();
 }
 
-void WundergroundNode::loop() {
-  if (isConfigured()) {
-    if (millis() >= _nextUpdate) {
+void WundergroundNode::loop()
+{
+  if (isConfigured())
+  {
+    if (millis() >= _nextUpdate)
+    {
       _wuClient->updateConditions(wundergroundApiKey.get(), wundergroundLanguage.get(), wundergroundCountry.get(), wundergroundCity.get());
       _wuClient->updateForecast(wundergroundApiKey.get(), wundergroundLanguage.get(), wundergroundCountry.get(), wundergroundCity.get());
       _nextUpdate = millis() + wundergroundUpdate.get() * 60000UL;

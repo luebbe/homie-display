@@ -6,6 +6,6 @@
 
 #include "WundergroundFrame.hpp"
 
-WuFrame::WuFrame(WundergroundClient *wuClient) {
-  _wuClient = wuClient;
+WuFrame::WuFrame(WundergroundClient *wuClient, NTPClient timeClient) : _wuClient(wuClient), _timeClient(timeClient)
+{
 }

@@ -103,8 +103,8 @@ void MqttNode::reconnect() {
 // Interface OLEDFrame
 void MqttNode::drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) {
   display.setFont(ArialMT_Plain_10);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(64 + x, y, _name);
+  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  display.drawString(128 + x, y, _name);
 
 //  display.setFont(ArialMT_Plain_24);
   display.setFont(ArialMT_Plain_16);

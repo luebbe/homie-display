@@ -8,16 +8,14 @@
 #ifndef SRC_STATUSNODE_H_
 #define SRC_STATUSNODE_H_
 
-#include <NTPClient.h>
 #include <OLEDIndexFrame.hpp>
 #include "images.h"
 
 class StatusNode: public HomieNode, public OLEDIndexFrame {
 private:
-  const long TC_TIMEZONEOFFSET = 0;  // Default UTC
-  const long TC_UPDATEINTERVAL = 15; // Default update every 15 minutes
-  const char *TC_SERVER = "europe.pool.ntp.org";
   const char *_name;
+  const char *_fw_name;
+  const char *_fw_version;
   bool _cfgmode;
   bool _mqtt;
   bool _wifi;
@@ -26,8 +24,6 @@ private:
   long _lasttick;
   String _statusText;
   String _alertMessage;
-  WiFiUDP _ntpUDP;
-  NTPClient *_timeClient;
 
   // Interface HomieNode
   bool handleBroadcast(const String& level, const String& value);
@@ -40,14 +36,9 @@ private:
   
   void drawWifiStrength(OLEDDisplay& display);
 
-protected:
-  virtual void loop() override;
-  
 public:
-  StatusNode(const char *name);
+  StatusNode(const char *name, const char *fw_name, const char *fw_version);
 
-  void beforeSetup();
-  void setupHandler();
   void event(const HomieEvent& event);
   
   void setStatusText(String const value) {
