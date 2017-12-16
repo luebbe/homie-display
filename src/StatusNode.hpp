@@ -5,13 +5,13 @@
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#ifndef SRC_STATUSNODE_H_
-#define SRC_STATUSNODE_H_
+#pragma once
 
 #include <OLEDIndexFrame.hpp>
 #include "images.h"
 
-class StatusNode: public HomieNode, public OLEDIndexFrame {
+class StatusNode : public HomieNode, public OLEDIndexFrame
+{
 private:
   const char *_name;
   const char *_fw_name;
@@ -26,30 +26,31 @@ private:
   String _alertMessage;
 
   // Interface HomieNode
-  bool handleBroadcast(const String& level, const String& value);
-  
-    // Interface OLEDFrame
-  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  bool handleBroadcast(const String &level, const String &value);
+
+  // Interface OLEDFrame
+  virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 
   // Interface OLEDStatusIndicator
-  virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx);
-  
-  void drawWifiStrength(OLEDDisplay& display);
+  virtual void drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state, uint8_t idx);
+
+  void drawWifiStrength(OLEDDisplay &display);
 
 public:
   StatusNode(const char *name, const char *fw_name, const char *fw_version);
 
-  void event(const HomieEvent& event);
-  
-  void setStatusText(String const value) {
+  void event(const HomieEvent &event);
+
+  void setStatusText(String const value)
+  {
     _statusText = value;
   };
-  bool isAlert() {
+  bool isAlert()
+  {
     return _alert;
   }
-  bool isWifiConnected() {
+  bool isWifiConnected()
+  {
     return _wifi;
   };
 };
-
-#endif

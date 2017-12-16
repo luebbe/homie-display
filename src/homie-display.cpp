@@ -76,7 +76,8 @@ void onHomieEvent(const HomieEvent &event)
 
 void loopHandler()
 {
-  if (timeClient.update()) {
+  if (timeClient.update())
+  {
     statusNode.setStatusText(timeClient.getFormattedTime());
   }
   if (statusNode.isAlert())

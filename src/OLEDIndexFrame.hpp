@@ -5,21 +5,19 @@
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#ifndef SRC_OLEDINDEXFRAME_H_
-#define SRC_OLEDINDEXFRAME_H_
+#pragma once
 
 #include <OLEDFrame.h>
 #include <OLEDOverlay.h>
 
-class OLEDIndexFrame: public OLEDFrame, public OLEDOverlay {
+class OLEDIndexFrame : public OLEDFrame, public OLEDOverlay
+{
 public:
   OLEDIndexFrame();
 
   // Interface OLEDFrame
-  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 
   // Interface OLEDOverlay
-  virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx) override;
+  virtual void drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state, uint8_t idx) override;
 };
-
-#endif
