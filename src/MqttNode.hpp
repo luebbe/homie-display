@@ -9,23 +9,20 @@
 
 #include <Homie.hpp>
 #include <HomieNode.hpp>
-#include <OLEDIndexFrame.hpp>
 #include <PubSubClient.h>
 
-class MqttNode : public HomieNode, public OLEDIndexFrame
+#include "MqttFrame.hpp"
+
+class MqttNode : public HomieNode
 {
 private:
   const char *MQTT_SERVER = "MQTT_SERVER";
   const char *MQTT_TOPIC = "MQTT_TOPIC";
   WiFiClient _wifiClient;
   PubSubClient *_mqtt;
+  MqttFrame *_mqttFrame;
 
   String _name;
-  String _temp = "ttt";
-  String _humid = "hhh";
-
-  // Interface OLEDFrame
-  virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 
   void reconnect();
 

@@ -15,6 +15,7 @@ MqttNode::MqttNode(const char *name) : HomieNode(name, "test")
 {
   _name = name;
   _mqtt = new PubSubClient(_wifiClient);
+  _mqttFrame = new MqttFrame();
 }
 
 void MqttNode::beforeSetup()
@@ -71,21 +72,23 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
 
   if (has_suffix(topic, "temperature"))
   {
-    _temp = "";
+    String _temp = "";
     for (int i = 0; i < length; i++)
     {
       _temp = _temp + (char)payload[i];
     }
     _temp.concat("°C");
+    _mqttFrame->setTemperature(_temp);
   }
   if (has_suffix(topic, "humidity"))
   {
-    _humid = "";
+    String _humid = "";
     for (int i = 0; i < length; i++)
     {
       _humid = _humid + (char)payload[i];
     }
     _humid.concat("%");
+    _mqttFrame->setHumidity(_humid);
   }
 }
 
@@ -112,20 +115,6 @@ void MqttNode::reconnect()
       Homie.getLogger() << " Failed" << endl;
   }
 }
-
-// Interface OLEDFrame
-void MqttNode::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
-{
-  display.setFont(ArialMT_Plain_10);
-  display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  display.drawString(128 + x, y, _name);
-
-  //  display.setFont(ArialMT_Plain_24);
-  display.setFont(ArialMT_Plain_16);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(x, 11 + y, _temp);
-  display.drawString(32 + x, 32 + y, _humid);
-};
 
 void MqttNode::loop()
 {
