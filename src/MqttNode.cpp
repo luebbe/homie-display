@@ -15,7 +15,7 @@ MqttNode::MqttNode(const char *name) : HomieNode(name, "test")
 {
   _name = name;
   _mqtt = new PubSubClient(_wifiClient);
-  _mqttFrame = new MqttFrame();
+  _mqttFrame = new MqttFrame(name);
 }
 
 void MqttNode::beforeSetup()
@@ -67,6 +67,7 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
       {
         _name = _name + (char)payload[i];
       }
+      _mqttFrame->setName(_name);
     }
   }
 

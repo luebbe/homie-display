@@ -19,12 +19,18 @@ private:
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 
-  public:
-    void setHumidity(String const value)
+public:
+  MqttFrame(const char *name);
+
+  void setName(String const value)
+  {
+    _name = value;
+  };
+  void setHumidity(String const value)
   {
     _humid = value;
   };
-    void setTemperature(String const value)
+  void setTemperature(String const value)
   {
     _temp = value;
   };

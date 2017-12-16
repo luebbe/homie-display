@@ -7,6 +7,11 @@
 
 #include "MqttFrame.hpp"
 
+MqttFrame::MqttFrame(const char *name)
+{
+  _name = name;
+}
+
 // Interface OLEDFrame
 void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
@@ -20,4 +25,3 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
   display.drawString(x, 11 + y, _temp);
   display.drawString(32 + x, 32 + y, _humid);
 };
-
