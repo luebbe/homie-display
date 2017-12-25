@@ -13,6 +13,13 @@ MqttFrame::MqttFrame(const std::string name)
   _isConfigured = false;
 }
 
+void MqttFrame::clear()
+{
+  _units.clear();
+  _values.clear();
+  _isConfigured = false;
+}
+
 unsigned int MqttFrame::addUnit(const std::string unit)
 {
   _units.push_back(unit);
@@ -47,7 +54,6 @@ void MqttFrame::setUnit(int index, const std::string unit)
     _units[index] = unit;
   }
 }
-
 
 void MqttFrame::setValue(int index, const std::string value)
 {

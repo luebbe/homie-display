@@ -24,6 +24,7 @@ private:
 public:
   MqttFrame(const std::string name);
 
+  void clear();
   unsigned int addUnit(const std::string unit);
   unsigned int addValue(const std::string value);
   bool getIsConfigured();

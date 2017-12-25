@@ -35,6 +35,7 @@ void MqttNode::setupHandler()
   if (mqttTitle.wasProvided())
   {
     _name = mqttTitle.get();
+    _mqttFrame->setName(mqttTitle.get());
   }
 
   _mqtt->setCallback(
@@ -143,6 +144,11 @@ void MqttNode::subscribeTo(const char *subtopic)
 void MqttNode::reconnect()
 {
   Homie.getLogger() << "• MqttNode - Reconnect" << endl;
+
+  _units.clear();
+  _values.clear();
+  _mqttFrame->clear();
+  
   if (mqttServer.wasProvided() && mqttTopic.wasProvided())
   {
     Homie.getLogger() << "  ◦ Connecting to: " << mqttServer.get();
