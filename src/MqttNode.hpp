@@ -1,7 +1,7 @@
 /*
  * Node that subscribes to a MQTT topic and displays the values that it receives
  *
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
@@ -22,9 +22,16 @@ private:
   PubSubClient *_mqtt;
   MqttFrame *_mqttFrame;
 
-  String _name;
+  std::string _name;
+  std::vector<std::string> _values;
+  std::vector<std::string> _units;
+
+  bool hasSuffix(const std::string str, const std::string suffix);
+  void getNodeProperties(const std::string value);
+  std::string getPayload(byte *payload, unsigned int length);
 
   void reconnect();
+  void subscribeTo(const char *subtopic);
 
 protected:
   virtual void loop() override;

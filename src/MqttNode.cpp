@@ -1,7 +1,7 @@
 /*
  * Node that subscribes to a MQTT topic and displays the values that it receives
  *
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
@@ -32,9 +32,6 @@ void MqttNode::setupHandler()
 {
   Homie.getLogger() << "• MqttNode - Setuphandler" << endl;
 
-  _mqttFrame->addValue("ttt", "°C");
-  _mqttFrame->addValue("hhh", "%");
-
   if (mqttTitle.wasProvided())
   {
     _name = mqttTitle.get();
@@ -51,65 +48,101 @@ void MqttNode::setupHandler()
   }
 };
 
-bool has_suffix(const std::string &str, const std::string &suffix)
+bool MqttNode::hasSuffix(const std::string str, const std::string suffix)
 {
   return str.size() >= suffix.size() &&
          str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
+std::string MqttNode::getPayload(byte *payload, unsigned int length)
+{
+  std::string result = "";
+  for (int i = 0; i < length; i++)
+  {
+    result = result + (char)payload[i];
+  }
+  return result;
+}
+
+void MqttNode::getNodeProperties(const std::string value)
+{
+  // Parse comma separated node properties
+  char *pch;
+  char *buf = new char[value.size() + 1];
+  std::copy(value.begin(), value.end(), buf);
+  buf[value.size()] = '\0'; // don't forget the terminating 0
+
+  pch = strtok(buf, ",");
+  while (pch != NULL)
+  {
+    // put them in the units or values basket and tell the display frame about them
+    if (hasSuffix(pch, "/unit"))
+    {
+      _units.push_back(pch);
+      _mqttFrame->addUnit(pch); // could add any string here.
+    }
+    else
+    {
+      _values.push_back(pch);
+      _mqttFrame->addValue(pch); // could add any string here.
+    }
+    // finally subscribe to the corresponding topics and continue to parse
+    subscribeTo(pch);
+    pch = strtok(NULL, ",");
+  }
+  delete[] buf;
+}
+
 void MqttNode::callback(char *topic, byte *payload, unsigned int length)
 {
-  Homie.getLogger() << "Mqtt message [" << topic << "][" << length << "] byte" << endl;
+  std::string value = getPayload(payload, length);
+  Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
 
-  if (!mqttTitle.wasProvided())
+  if (hasSuffix(topic, "$type"))
   {
-    if (has_suffix(topic, "$type"))
-    {
-      _name = "";
-      for (int i = 0; i < length; i++)
-      {
-        _name = _name + (char)payload[i];
-      }
-      _mqttFrame->setName(_name);
-    }
+    // type is used as display name for the frame when nothing was provided in the config
+    if (!mqttTitle.wasProvided())
+      _mqttFrame->setName(value);
   }
 
-  // if (has_suffix(topic, "$properties"))
-  // {
-  //   char *pch;
-  //   char *ppayload;
-  //   ppayload = (char*) payload;
-  //   pch = strtok(ppayload, ",");
-  //   while (pch != NULL)
-  //   {
-  //     Homie.getLogger() << pch << endl;
-  //     pch = strtok(NULL, ",");
-  //   }
-  // }
-
-  if (has_suffix(topic, "temperature"))
+  else if (hasSuffix(topic, "$properties"))
   {
-    String _temp = "";
-    for (int i = 0; i < length; i++)
-    {
-      _temp = _temp + (char)payload[i];
-    }
-    _mqttFrame->setValue(0, _temp);
+    // autodetect and subscribe to all properties
+    if (!_mqttFrame->getIsConfigured())
+      getNodeProperties(value);
   }
 
-  if (has_suffix(topic, "humidity"))
+  else
   {
-    String _humid = "";
-    for (int i = 0; i < length; i++)
+    // retrieve the propeties to which we have subscribed earlier
+    for (int i = 0; i < _units.size(); i++)
     {
-      _humid = _humid + (char)payload[i];
+      if (hasSuffix(topic, _units[i]))
+        _mqttFrame->setUnit(i, value);
     }
-    _mqttFrame->setValue(1, _humid);
+
+    for (int i = 0; i < _values.size(); i++)
+    {
+      if (hasSuffix(topic, _values[i]))
+        _mqttFrame->setValue(i, value);
+    }
   }
+}
+
+void MqttNode::subscribeTo(const char *subtopic)
+{
+  char buf[256];
+  snprintf(buf, sizeof buf, "%s/%s", mqttTopic.get(), subtopic);
+  Homie.getLogger() << "  ◦ Subscribing to: " << buf;
+  if (_mqtt->subscribe(buf))
+    Homie.getLogger() << " OK" << endl;
+  else
+    Homie.getLogger() << " Failed" << endl;
 }
 
 void MqttNode::reconnect()
 {
+  Homie.getLogger() << "• MqttNode - Reconnect" << endl;
   if (mqttServer.wasProvided() && mqttTopic.wasProvided())
   {
     Homie.getLogger() << "  ◦ Connecting to: " << mqttServer.get();
@@ -120,11 +153,9 @@ void MqttNode::reconnect()
       Homie.getLogger() << " OK" << endl;
       if (mqttTopic.wasProvided())
       {
-        Homie.getLogger() << "  ◦ Subscribing to: " << mqttTopic.get();
-        if (_mqtt->subscribe(mqttTopic.get()))
-          Homie.getLogger() << " OK" << endl;
-        else
-          Homie.getLogger() << " Failed" << endl;
+        // First subscribe just to type and properties in order to retrieve the properties
+        subscribeTo("$type");
+        subscribeTo("$properties");
       }
     }
     else

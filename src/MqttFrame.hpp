@@ -7,23 +7,28 @@
 
 #pragma once
 
+#include <string>
 #include <OLEDIndexFrame.hpp>
 
 class MqttFrame : public OLEDIndexFrame
 {
 private:
-  String _name;
-  std::vector<String> _values;
-  std::vector<String> _units;
+  std::string _name;
+  bool _isConfigured;
+  std::vector<std::string> _values;
+  std::vector<std::string> _units;
 
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 
 public:
-  MqttFrame(const String name);
+  MqttFrame(const std::string name);
 
-  unsigned int addValue(const String value, const String unit);
-  void setName(const String value);
-  void setUnit(int index, const String unit);
-  void setValue(int index, const String value);
+  unsigned int addUnit(const std::string unit);
+  unsigned int addValue(const std::string value);
+  bool getIsConfigured();
+  void setIsConfigured(const bool value);
+  void setName(std::string value);
+  void setUnit(int index, const std::string unit);
+  void setValue(int index, const std::string value);
 };
