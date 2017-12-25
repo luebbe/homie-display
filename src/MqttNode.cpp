@@ -32,13 +32,18 @@ void MqttNode::setupHandler()
 {
   Homie.getLogger() << "• MqttNode - Setuphandler" << endl;
 
+  _mqttFrame->addValue("ttt", "°C");
+  _mqttFrame->addValue("hhh", "%");
+
   if (mqttTitle.wasProvided())
   {
     _name = mqttTitle.get();
   }
 
   _mqtt->setCallback(
-      [this](char *topic, byte *payload, unsigned int length) { this->callback(topic, payload, length); });
+      [this](char *topic, byte *payload, unsigned int length) {
+        this->callback(topic, payload, length);
+      });
 
   if (!_mqtt->connected())
   {
@@ -55,9 +60,7 @@ bool has_suffix(const std::string &str, const std::string &suffix)
 void MqttNode::callback(char *topic, byte *payload, unsigned int length)
 {
   Homie.getLogger() << "Mqtt message [" << topic << "][" << length << "] byte" << endl;
-  // for (int i = 0; i < length; i++) {
-  //   Serial.print((char)payload[i]);
-  // }
+
   if (!mqttTitle.wasProvided())
   {
     if (has_suffix(topic, "$type"))
@@ -71,6 +74,19 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
     }
   }
 
+  // if (has_suffix(topic, "$properties"))
+  // {
+  //   char *pch;
+  //   char *ppayload;
+  //   ppayload = (char*) payload;
+  //   pch = strtok(ppayload, ",");
+  //   while (pch != NULL)
+  //   {
+  //     Homie.getLogger() << pch << endl;
+  //     pch = strtok(NULL, ",");
+  //   }
+  // }
+
   if (has_suffix(topic, "temperature"))
   {
     String _temp = "";
@@ -78,9 +94,9 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
     {
       _temp = _temp + (char)payload[i];
     }
-    _temp.concat("°C");
-    _mqttFrame->setTemperature(_temp);
+    _mqttFrame->setValue(0, _temp);
   }
+
   if (has_suffix(topic, "humidity"))
   {
     String _humid = "";
@@ -88,8 +104,7 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
     {
       _humid = _humid + (char)payload[i];
     }
-    _humid.concat("%");
-    _mqttFrame->setHumidity(_humid);
+    _mqttFrame->setValue(1, _humid);
   }
 }
 
