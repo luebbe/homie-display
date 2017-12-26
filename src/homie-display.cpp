@@ -1,6 +1,4 @@
 /*
- *
- * Version: 1.0.0
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 

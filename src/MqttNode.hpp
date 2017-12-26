@@ -18,6 +18,9 @@ class MqttNode : public HomieNode
 private:
   const char *MQTT_SERVER = "MQTT_SERVER";
   const char *MQTT_TOPIC = "MQTT_TOPIC";
+  const char *cTypeTopic = "$type";
+  const char *cPropsTopic = "$properties";
+
   WiFiClient _wifiClient;
   PubSubClient *_mqtt;
   MqttFrame *_mqttFrame;
@@ -32,6 +35,7 @@ private:
 
   void reconnect();
   void subscribeTo(const char *subtopic);
+  void unsubscribeFrom(const char *subtopic);
 
 protected:
   virtual void loop() override;
