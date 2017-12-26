@@ -80,12 +80,12 @@ void MqttNode::getNodeProperties(const std::string value)
     if (hasSuffix(pch, "/unit"))
     {
       _units.push_back(pch);
-      _mqttFrame->addUnit(pch); // could add any string here.
+      _mqttFrame->addUnit("N/A"); // could add any string here.
     }
     else
     {
       _values.push_back(pch);
-      _mqttFrame->addValue(pch); // could add any string here.
+      _mqttFrame->addValue("N/A"); // could add any string here.
     }
     // finally subscribe to the corresponding topics and continue to parse
     subscribeTo(pch);
@@ -159,7 +159,8 @@ void MqttNode::reconnect()
       Homie.getLogger() << " OK" << endl;
       if (mqttTopic.wasProvided())
       {
-        // First subscribe just to type and properties in order to retrieve the properties
+        // First subscribe just to type and properties in order to retrieve 
+        // the properties and default node name
         subscribeTo("$type");
         subscribeTo("$properties");
       }
