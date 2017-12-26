@@ -1,43 +1,45 @@
 /*
  * Node that subscribes to a MQTT topic and displays the values that it receives
  *
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#ifndef SRC_MQTTNODE_H_
-#define SRC_MQTTNODE_H_
+#pragma once
 
 #include <Homie.hpp>
 #include <HomieNode.hpp>
-#include <OLEDIndexFrame.hpp>
 #include <PubSubClient.h>
 
-class MqttNode: public HomieNode, public OLEDIndexFrame {
+#include "MqttFrame.hpp"
+
+class MqttNode : public HomieNode
+{
 private:
   const char *MQTT_SERVER = "MQTT_SERVER";
   const char *MQTT_TOPIC = "MQTT_TOPIC";
   WiFiClient _wifiClient;
   PubSubClient *_mqtt;
-  
-  String _name;
-  String _temp = "ttt";
-  String _humid = "hhh";
-    
-  // Interface OLEDFrame
-  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
-  
+  MqttFrame *_mqttFrame;
+
+  std::string _name;
+  std::vector<std::string> _values;
+  std::vector<std::string> _units;
+
+  bool hasSuffix(const std::string str, const std::string suffix);
+  void getNodeProperties(const std::string value);
+  std::string getPayload(byte *payload, unsigned int length);
+
   void reconnect();
-  
+  void subscribeTo(const char *subtopic);
+
 protected:
   virtual void loop() override;
-  void callback(char* topic, byte* payload, unsigned int length);
-  
+  void callback(char *topic, byte *payload, unsigned int length);
+
 public:
   MqttNode(const char *name);
 
   void beforeSetup();
   void setupHandler();
 };
-
-#endif

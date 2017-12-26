@@ -6,17 +6,15 @@
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#ifndef SRC_WU_CURRENTWEATHERFRAME_H_
-#define SRC_WU_CURRENTWEATHERFRAME_H_
+#pragma once
 
 #include <WundergroundFrame.hpp>
 
-class WuCurrentWeatherFrame: public WuFrame {
+class WuCurrentWeatherFrame : public WuFrame
+{
 public:
   WuCurrentWeatherFrame(WundergroundClient *wuClient, NTPClient timeClient);
 
   // Interface OLEDFrame
-  virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) override;
+  virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 };
-
-#endif

@@ -4,8 +4,7 @@
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#ifndef SRC_WU_FRAME_H_
-#define SRC_WU_FRAME_H_
+#pragma once
 
 #include <OLEDIndexFrame.hpp>
 #include <NTPClient.h>
@@ -22,5 +21,3 @@ protected:
 public:
   WuFrame(WundergroundClient *wuClient, NTPClient timeClient);
 };
-
-#endif

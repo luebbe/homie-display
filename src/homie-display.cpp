@@ -5,7 +5,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.1"
+#define FW_VERSION "1.0.2"
 
 #include <Homie.h>
 #include <NTPClient.h>
@@ -29,8 +29,8 @@ NTPClient timeClient(ntpUDP, TC_SERVER);
 #include <OLEDDisplayUi.h>
 
 const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int PIN_SDA = 5;
-const int PIN_SCL = 4;
+const int PIN_SDA = 4; // =D2 on Wemos
+const int PIN_SCL = 5; // =D1 on Wemos
 // const int PIN_SDA = 12;
 // const int PIN_SCL = 13;
 
@@ -76,7 +76,8 @@ void onHomieEvent(const HomieEvent &event)
 
 void loopHandler()
 {
-  if (timeClient.update()) {
+  if (timeClient.update())
+  {
     statusNode.setStatusText(timeClient.getFormattedTime());
   }
   if (statusNode.isAlert())
