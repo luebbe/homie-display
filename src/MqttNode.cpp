@@ -82,7 +82,7 @@ void MqttNode::getNodeProperties(const std::string value)
       _units.push_back(pch);
       _mqttFrame->addUnit("N/A"); // could add any string here.
     }
-    else
+    else if (!hasSuffix(pch, "status"))
     {
       _values.push_back(pch);
       _mqttFrame->addValue("N/A"); // could add any string here.

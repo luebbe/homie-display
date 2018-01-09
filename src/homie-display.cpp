@@ -41,7 +41,7 @@ WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
 StatusNode statusNode("Status", FW_NAME, FW_VERSION);
 MqttNode mqttNode("MqttClient");
-WundergroundNode wundergroundNode("Wunderground", timeClient);
+WundergroundNode wundergroundNode("Wunderground", &timeClient);
 
 HomieSetting<long> timeclientOffset("TcOffset", "The time zone offset for the NTP client in hours (-12 .. 12");
 HomieSetting<long> timeclientUpdate("TcUpdate", "The update interval in minutes for the NTP client (must be at least 10 minutes)");
