@@ -71,7 +71,7 @@ void StatusNode::event(const HomieEvent &event)
     _statusText = "Wi-Fi disconnected";
     _wifi = false;
     break;
-  case HomieEventType::MQTT_CONNECTED:
+  case HomieEventType::MQTT_READY:
     _statusText = "MQTT ready";
     _mqtt = true;
     break;
