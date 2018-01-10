@@ -21,9 +21,9 @@ void WuForecastFrame::drawFrame(
   {
     baseDay += 2;
   }
-  drawForecastDetails(display, x, y, baseDay + 2);
-  drawForecastDetails(display, x + 44, y, baseDay + 4);
-  drawForecastDetails(display, x + 88, y, baseDay + 6);
+  drawForecastDetails(display, x, y, baseDay);
+  drawForecastDetails(display, x + 44, y, baseDay + 2);
+  drawForecastDetails(display, x + 88, y, baseDay + 4);
 }
 
 void WuForecastFrame::drawForecastDetails(

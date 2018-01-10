@@ -14,7 +14,8 @@ class MqttFrame : public OLEDIndexFrame
 {
 private:
   std::string _name;
-  bool _isConfigured;
+  bool _isConfigured = false;
+  bool _isOk = false;
   std::vector<std::string> _values;
   std::vector<std::string> _units;
 
@@ -29,6 +30,7 @@ public:
   unsigned int addValue(const std::string value);
   bool getIsConfigured();
   void setIsConfigured(const bool value);
+  void setIsOk(const bool value);
   void setName(std::string value);
   void setUnit(int index, const std::string unit);
   void setValue(int index, const std::string value);

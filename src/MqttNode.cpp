@@ -118,6 +118,11 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
     unsubscribeFrom(cPropsTopic);
   }
 
+  else if (hasSuffix(topic, cStatusTopic))
+  {
+    _mqttFrame->setIsOk(value == "ok");
+  }
+
   else
   {
     // retrieve the propeties to which we have subscribed earlier

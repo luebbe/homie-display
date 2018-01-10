@@ -20,6 +20,7 @@ private:
   const char *MQTT_TOPIC = "MQTT_TOPIC";
   const char *cTypeTopic = "$type";
   const char *cPropsTopic = "$properties";
+  const char *cStatusTopic = "status";
 
   WiFiClient _wifiClient;
   PubSubClient *_mqtt;
