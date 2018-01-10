@@ -82,7 +82,7 @@ void MqttNode::getNodeProperties(const std::string value)
       _units.push_back(pch);
       _mqttFrame->addUnit("N/A"); // could add any string here.
     }
-    else
+    else if (!hasSuffix(pch, "status"))
     {
       _values.push_back(pch);
       _mqttFrame->addValue("N/A"); // could add any string here.
@@ -99,18 +99,28 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
   std::string value = getPayload(payload, length);
   Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
 
-  if (hasSuffix(topic, "$type"))
+  if (hasSuffix(topic, cTypeTopic))
   {
     // type is used as display name for the frame when nothing was provided in the config
     if (!mqttTitle.wasProvided())
       _mqttFrame->setName(value);
+    unsubscribeFrom(cTypeTopic);
   }
 
-  else if (hasSuffix(topic, "$properties"))
+  else if (hasSuffix(topic, cPropsTopic))
   {
     // autodetect and subscribe to all properties
     if (!_mqttFrame->getIsConfigured())
+    {
       getNodeProperties(value);
+      _mqttFrame->setIsConfigured(true);
+    }
+    unsubscribeFrom(cPropsTopic);
+  }
+
+  else if (hasSuffix(topic, cStatusTopic))
+  {
+    _mqttFrame->setIsOk(value == "ok");
   }
 
   else
@@ -141,6 +151,17 @@ void MqttNode::subscribeTo(const char *subtopic)
     Homie.getLogger() << " Failed" << endl;
 }
 
+void MqttNode::unsubscribeFrom(const char *subtopic)
+{
+  char buf[256];
+  snprintf(buf, sizeof buf, "%s/%s", mqttTopic.get(), subtopic);
+  Homie.getLogger() << "  ◦ Unsubscribing from: " << buf;
+  if (_mqtt->unsubscribe(buf))
+    Homie.getLogger() << " OK" << endl;
+  else
+    Homie.getLogger() << " Failed" << endl;
+}
+
 void MqttNode::reconnect()
 {
   Homie.getLogger() << "• MqttNode - Reconnect" << endl;
@@ -148,7 +169,7 @@ void MqttNode::reconnect()
   _units.clear();
   _values.clear();
   _mqttFrame->clear();
-  
+
   if (mqttServer.wasProvided() && mqttTopic.wasProvided())
   {
     Homie.getLogger() << "  ◦ Connecting to: " << mqttServer.get();
@@ -159,10 +180,10 @@ void MqttNode::reconnect()
       Homie.getLogger() << " OK" << endl;
       if (mqttTopic.wasProvided())
       {
-        // First subscribe just to type and properties in order to retrieve 
+        // First subscribe just to type and properties in order to retrieve
         // the properties and default node name
-        subscribeTo("$type");
-        subscribeTo("$properties");
+        subscribeTo(cTypeTopic);
+        subscribeTo(cPropsTopic);
       }
     }
     else

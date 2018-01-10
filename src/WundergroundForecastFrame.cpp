@@ -7,7 +7,7 @@
 
 #include "WundergroundForecastFrame.hpp"
 
-WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient, NTPClient timeClient)
+WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient, NTPClient *timeClient)
     : WuFrame(wuClient, timeClient) {}
 
 void WuForecastFrame::drawFrame(
@@ -17,13 +17,13 @@ void WuForecastFrame::drawFrame(
 {
   // Skip to the next day at noon
   int baseDay = 0;
-  if (_timeClient.getHours() >= 12)
+  if (_timeClient->getHours() >= 12)
   {
     baseDay += 2;
   }
-  drawForecastDetails(display, x, y, baseDay + 2);
-  drawForecastDetails(display, x + 44, y, baseDay + 4);
-  drawForecastDetails(display, x + 88, y, baseDay + 6);
+  drawForecastDetails(display, x, y, baseDay);
+  drawForecastDetails(display, x + 44, y, baseDay + 2);
+  drawForecastDetails(display, x + 88, y, baseDay + 4);
 }
 
 void WuForecastFrame::drawForecastDetails(

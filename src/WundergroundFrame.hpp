@@ -16,8 +16,8 @@ class WuFrame : public OLEDIndexFrame
 {
 protected:
   WundergroundClient *_wuClient;
-  NTPClient _timeClient;
+  NTPClient *_timeClient;
 
 public:
-  WuFrame(WundergroundClient *wuClient, NTPClient timeClient);
+  WuFrame(WundergroundClient *wuClient, NTPClient *timeClient);
 };
