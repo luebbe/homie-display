@@ -26,6 +26,8 @@ private:
   PubSubClient *_mqtt;
   MqttFrame *_mqttFrame;
 
+  unsigned long _lastTry = 0;
+  
   std::string _name;
   std::vector<std::string> _values;
   std::vector<std::string> _units;

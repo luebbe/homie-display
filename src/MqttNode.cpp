@@ -164,15 +164,14 @@ void MqttNode::unsubscribeFrom(const char *subtopic)
 
 void MqttNode::reconnect()
 {
-  Homie.getLogger() << "• MqttNode - Reconnect" << endl;
-
-  _units.clear();
-  _values.clear();
-  _mqttFrame->clear();
-
   if (mqttServer.wasProvided() && mqttTopic.wasProvided())
   {
-    Homie.getLogger() << "  ◦ Connecting to: " << mqttServer.get();
+    Homie.getLogger() << "• MqttNode - Reconnect" << endl
+                      << "  ◦ Connecting to: " << mqttServer.get();
+
+    _units.clear();
+    _values.clear();
+    _mqttFrame->clear();
 
     _mqtt->setServer(mqttServer.get(), 1883);
     if (_mqtt->connect(Homie.getConfiguration().deviceId))
@@ -195,7 +194,13 @@ void MqttNode::loop()
 {
   if (!_mqtt->connected())
   {
-    reconnect();
+    unsigned int now = millis();
+    // retry every two seconds
+    if ((now - _lastTry > 2000) || (_lastTry == 0))
+    {
+      _lastTry = now;
+      reconnect();
+    }
   }
   _mqtt->loop();
 }
