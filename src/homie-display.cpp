@@ -29,8 +29,6 @@ NTPClient timeClient(ntpUDP, TC_SERVER);
 const int I2C_DISPLAY_ADDRESS = 0x3c;
 const int PIN_SDA = 4; // =D2 on Wemos
 const int PIN_SCL = 5; // =D1 on Wemos
-// const int PIN_SDA = 12;
-// const int PIN_SCL = 13;
 
 // Connected peripherals
 SSD1306Wire display(I2C_DISPLAY_ADDRESS, PIN_SDA, PIN_SCL);
