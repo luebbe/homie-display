@@ -106,6 +106,10 @@ void setup()
   welcome.show();
   ota.setup();
 
+  // Initializes I2C for BME280 sensor and display
+  Homie.getLogger() << "• Wire begin SDA=" << PIN_SDA << " SCL=" << PIN_SCL << endl;
+  Wire.begin(PIN_SDA, PIN_SCL);
+
   mqttNode.beforeSetup();
   wundergroundNode.beforeSetup();
 
