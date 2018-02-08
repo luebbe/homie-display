@@ -18,6 +18,11 @@ private:
   bool _isOk = false;
   std::vector<std::string> _values;
   std::vector<std::string> _units;
+  bool _curPageCounted = false;
+  uint8_t _curPage = 0;
+
+  void drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
+  void drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
 
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;

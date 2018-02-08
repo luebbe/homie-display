@@ -1,5 +1,9 @@
 /*
  * Display frame that shows text passed to it
+ * 
+ * Two alternative modes
+ * - drawAllValues shows all values on the same screen
+ * - drawSingleValue cycels through the values and shows only one at a time
  *
  * Version: 1.0.1
  * Author: Lübbe Onken (http://github.com/luebbe)
@@ -68,6 +72,66 @@ void MqttFrame::setValue(int index, const std::string value)
   }
 }
 
+void MqttFrame::drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
+{
+  // Select different font size depending on the number of values to display
+  // works fine with 0..3 parameters
+  int baseoffset = 12;
+  int rowoffset = 0;
+  if (_values.size() <= 1)
+  {
+    display.setFont(ArialMT_Plain_24);
+    rowoffset = 30;
+  }
+  else if (_values.size() <= 2)
+  {
+    display.setFont(ArialMT_Plain_16);
+    rowoffset = 20;
+  }
+  else
+  {
+    display.setFont(ArialMT_Plain_10);
+    rowoffset = 12;
+  }
+
+  // Align output at space between value and unit
+  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  for (int i = 0; i < _values.size(); i++)
+  {
+    display.drawString(x + 78, y + baseoffset + rowoffset * i, _values[i].c_str());
+  }
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  for (int i = 0; i < _units.size(); i++)
+  {
+    display.drawString(x + 80, y + baseoffset + rowoffset * i, _units[i].c_str());
+  }
+}
+
+void MqttFrame::drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
+{
+  if (x > 0)
+  {
+    if (!_curPageCounted)
+    {
+      _curPage = (_curPage + 1) % _values.size();
+      _curPageCounted = true;
+    }
+  }
+  else
+  {
+    _curPageCounted = false;
+  }
+
+  int baseoffset = 12;
+  display.setFont(ArialMT_Plain_24);
+
+  // Align output at space between value and unit
+  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  display.drawString(x + 84, y + baseoffset, _values[_curPage].c_str());
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.drawString(x + 86, y + baseoffset, _units[_curPage].c_str());
+}
+
 // Interface OLEDFrame
 void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
@@ -77,37 +141,8 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
 
   if (_isOk)
   {
-    // Select different font size depending on the number of values to display
-    // works fine with 0..3 parameters
-    int baseoffset = 12;
-    int rowoffset = 0;
-    if (_values.size() <= 1)
-    {
-      display.setFont(ArialMT_Plain_24);
-      rowoffset = 30;
-    }
-    else if (_values.size() <= 2)
-    {
-      display.setFont(ArialMT_Plain_16);
-      rowoffset = 20;
-    }
-    else
-    {
-      display.setFont(ArialMT_Plain_10);
-      rowoffset = 12;
-    }
-
-    // Align output at space between value and unit
-    display.setTextAlignment(TEXT_ALIGN_RIGHT);
-    for (int i = 0; i < _values.size(); i++)
-    {
-      display.drawString(x + 78, y + baseoffset + rowoffset * i, _values[i].c_str());
-    }
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    for (int i = 0; i < _units.size(); i++)
-    {
-      display.drawString(x + 80, y + baseoffset + rowoffset * i, _units[i].c_str());
-    }
+    // drawAllValues(display, state, x, y);
+    drawSingleValue(display, state, x, y);
   }
   else
   {

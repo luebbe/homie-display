@@ -3,7 +3,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.3"
+#define FW_VERSION "1.0.4"
 
 #include <Homie.h>
 #include <NTPClient.h>
