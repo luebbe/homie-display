@@ -16,8 +16,10 @@ private:
   std::string _name;
   bool _isConfigured = false;
   bool _isOk = false;
-  std::vector<std::string> _values;
   std::vector<std::string> _units;
+  std::vector<std::string> _values;
+  std::vector<float> _minValues;
+  std::vector<float> _maxValues;  
   bool _curPageCounted = false;
   uint8_t _curPage = 0;
 
@@ -33,6 +35,7 @@ public:
   void clear();
   unsigned int addUnit(const std::string unit);
   unsigned int addValue(const std::string value);
+  void resetMinMax();
   bool getIsConfigured();
   void setIsConfigured(const bool value);
   void setIsOk(const bool value);

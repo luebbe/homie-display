@@ -47,6 +47,7 @@ protected:
 public:
   MqttNode(const char *name);
 
+  void resetMinMax();
   void beforeSetup();
   void setupHandler();
 };

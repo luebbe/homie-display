@@ -191,6 +191,11 @@ void MqttNode::reconnect()
   }
 }
 
+void MqttNode::resetMinMax()
+{
+  _mqttFrame->resetMinMax();
+}
+
 void MqttNode::loop()
 {
   if (!_mqtt->connected())

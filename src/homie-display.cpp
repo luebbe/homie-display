@@ -3,7 +3,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.4"
+#define FW_VERSION "1.0.5"
 
 #include <Homie.h>
 #include <NTPClient.h>
@@ -74,7 +74,11 @@ void loopHandler()
 {
   if (timeClient.update())
   {
-    statusNode.setStatusText(timeClient.getFormattedTime());
+    String curTime = timeClient.getFormattedTime();
+    statusNode.setStatusText(curTime);
+    if (curTime == "00:00:00") {
+      mqttNode.resetMinMax();
+    }
   }
   if (statusNode.isAlert())
   {

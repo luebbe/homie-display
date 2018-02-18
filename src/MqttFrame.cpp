@@ -21,6 +21,8 @@ void MqttFrame::clear()
 {
   _units.clear();
   _values.clear();
+  _minValues.clear();
+  _maxValues.clear();
   _isConfigured = false;
 }
 
@@ -33,6 +35,8 @@ unsigned int MqttFrame::addUnit(const std::string unit)
 unsigned int MqttFrame::addValue(const std::string value)
 {
   _values.push_back(value);
+  _minValues.push_back(std::numeric_limits<float>::max());
+  _maxValues.push_back(std::numeric_limits<float>::min());
   return _values.size();
 }
 
@@ -69,6 +73,18 @@ void MqttFrame::setValue(int index, const std::string value)
   if (index <= _values.size())
   {
     _values[index] = value;
+    float tempVal = 0.0;
+    if (sscanf(value.c_str(), "%f", &tempVal) > 0)
+    {
+      if (tempVal < _minValues[index])
+      {
+        _minValues[index] = tempVal;
+      }
+      if (tempVal > _maxValues[index])
+      {
+        _maxValues[index] = tempVal;
+      }
+    }
   }
 }
 
@@ -130,6 +146,13 @@ void MqttFrame::drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state,
   display.drawString(x + 84, y + baseoffset, _values[_curPage].c_str());
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   display.drawString(x + 86, y + baseoffset, _units[_curPage].c_str());
+
+  char tempMinMaxBuff[20] = "";
+  sprintf(tempMinMaxBuff, "%3.1f/%3.1f %s", _minValues[_curPage], _maxValues[_curPage], _units[_curPage].c_str());
+
+  display.setFont(ArialMT_Plain_10);
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.drawString(x + 64, y + 36, tempMinMaxBuff);
 }
 
 // Interface OLEDFrame
@@ -151,3 +174,12 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
     display.drawString(x + 64, y + 12, "Error");
   }
 };
+
+void MqttFrame::resetMinMax()
+{
+  for (int i = 0; i < _minValues.size(); i++)
+  {
+   _minValues[i] = std::numeric_limits<float>::max();
+   _maxValues[i] = std::numeric_limits<float>::min();
+ }
+}
