@@ -86,7 +86,7 @@ void MqttNode::getNodeProperties(const std::string value)
     else if (!hasSuffix(pch, "status"))
     {
       _values.push_back(pch);
-      _mqttFrame->addValue("N/A"); // could add any string here.
+      _mqttFrame->addValue(0.0); // could add any value here.
     }
     // finally subscribe to the corresponding topics and continue to parse
     subscribeTo(pch);
@@ -136,7 +136,11 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
     for (int i = 0; i < _values.size(); i++)
     {
       if (hasSuffix(topic, _values[i]))
-        _mqttFrame->setValue(i, value);
+      {
+        float floatVal = 0.0;
+        if (sscanf(value.c_str(), "%f", &floatVal) > 0)
+          _mqttFrame->setValue(i, floatVal);
+      }
     }
   }
 }
