@@ -76,7 +76,8 @@ void loopHandler()
   {
     String curTime = timeClient.getFormattedTime();
     statusNode.setStatusText(curTime);
-    if (curTime == "00:00:00") {
+    if (timeClient.getEpochTime() % 86400 == 0)
+    {
       mqttNode.resetMinMax();
     }
   }

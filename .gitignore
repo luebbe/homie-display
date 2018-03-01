@@ -7,3 +7,6 @@ data/homie
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/settings.json
+.vscode/*.db
+.vscode/.BROWSE.C_CPP.DB-wal
+.vscode/.BROWSE.C_CPP.DB-shm
