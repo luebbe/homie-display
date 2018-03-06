@@ -36,7 +36,7 @@ unsigned int MqttFrame::addValue(const float value)
 {
   _values.push_back(value);
   _minValues.push_back(std::numeric_limits<float>::max());
-  _maxValues.push_back(std::numeric_limits<float>::min());
+  _maxValues.push_back(-std::numeric_limits<float>::max());
   return _values.size();
 }
 
@@ -81,6 +81,15 @@ void MqttFrame::setValue(int index, const float value)
     {
       _maxValues[index] = value;
     }
+  }
+}
+
+void MqttFrame::resetMinMax()
+{
+  for (int i = 0; i < _minValues.size(); i++)
+  {
+    _minValues[i] = std::numeric_limits<float>::max();
+    _maxValues[i] = -std::numeric_limits<float>::max();
   }
 }
 
@@ -174,12 +183,3 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
     display.drawString(x + 64, y + 12, "Error");
   }
 };
-
-void MqttFrame::resetMinMax()
-{
-  for (int i = 0; i < _minValues.size(); i++)
-  {
-    _minValues[i] = std::numeric_limits<float>::max();
-    _maxValues[i] = std::numeric_limits<float>::min();
-  }
-}
