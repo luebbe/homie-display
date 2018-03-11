@@ -4,9 +4,4 @@
 .gcc-flags.json
 lib/homie-esp8266-2.0
 data/homie
-.vscode/c_cpp_properties.json
-.vscode/launch.json
-.vscode/settings.json
-.vscode/*.db
-.vscode/.BROWSE.C_CPP.DB-wal
-.vscode/.BROWSE.C_CPP.DB-shm
+.vscode/*.*

@@ -3,7 +3,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.5"
+#define FW_VERSION "1.0.6"
 
 #include <Homie.h>
 #include <NTPClient.h>
@@ -44,6 +44,8 @@ WundergroundNode wundergroundNode("Wunderground", &timeClient);
 HomieSetting<long> timeclientOffset("TcOffset", "The time zone offset for the NTP client in hours (-12 .. 12");
 HomieSetting<long> timeclientUpdate("TcUpdate", "The update interval in minutes for the NTP client (must be at least 10 minutes)");
 
+bool _resetMinMax = false;
+
 void resumeTransition()
 {
   ui.enableAutoTransition();
@@ -76,9 +78,20 @@ void loopHandler()
   {
     String curTime = timeClient.getFormattedTime();
     statusNode.setStatusText(curTime);
-    if (timeClient.getEpochTime() % 86400 == 0)
+    int secondsOfDay = timeClient.getEpochTime() % 86400;
+    if (!_resetMinMax)
     {
-      mqttNode.resetMinMax();
+      // Reset min/max values at midnight
+      if (secondsOfDay == 0)
+      {
+        _resetMinMax = true;
+        mqttNode.resetMinMax();
+      }
+    }
+    else if (secondsOfDay == 10)
+    {
+      // Rearm trigger ten seconds after midnight
+      _resetMinMax = false;
     }
   }
   if (statusNode.isAlert())

@@ -9,10 +9,15 @@
 
 #include <string>
 #include <OLEDIndexFrame.hpp>
+#ifdef DEBUGMINMAX
+#include <Homie.hpp>
+#endif
 
 class MqttFrame : public OLEDIndexFrame
 {
 private:
+  float cMaxFloat = 1E100;
+  float cMinFloat = -cMaxFloat;
   std::string _name;
   bool _isConfigured = false;
   bool _isOk = false;

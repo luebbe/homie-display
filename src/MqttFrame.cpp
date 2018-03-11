@@ -35,8 +35,8 @@ unsigned int MqttFrame::addUnit(const std::string unit)
 unsigned int MqttFrame::addValue(const float value)
 {
   _values.push_back(value);
-  _minValues.push_back(std::numeric_limits<float>::max());
-  _maxValues.push_back(-std::numeric_limits<float>::max());
+  _minValues.push_back(cMaxFloat);
+  _maxValues.push_back(cMinFloat);
   return _values.size();
 }
 
@@ -75,10 +75,16 @@ void MqttFrame::setValue(int index, const float value)
     _values[index] = value;
     if (value < _minValues[index])
     {
+#ifdef DEBUGMINMAX
+      Homie.getLogger() << "Min[" << index << "] " << _minValues[index] << "->" << value << endl;
+#endif
       _minValues[index] = value;
     }
     if (value > _maxValues[index])
     {
+#ifdef DEBUGMINMAX
+      Homie.getLogger() << "Max[" << index << "] " << _maxValues[index] << "->" << value << endl;
+#endif
       _maxValues[index] = value;
     }
   }
@@ -88,8 +94,11 @@ void MqttFrame::resetMinMax()
 {
   for (int i = 0; i < _minValues.size(); i++)
   {
-    _minValues[i] = std::numeric_limits<float>::max();
-    _maxValues[i] = -std::numeric_limits<float>::max();
+#ifdef DEBUGMINMAX
+    Homie.getLogger() << "Min/Max[" << i << "] " << _minValues[i] << "/" << _maxValues[i] << "->" << _values[i] << endl;
+#endif
+    _minValues[i] = _values[i];
+    _maxValues[i] = _values[i];
   }
 }
 
