@@ -7,8 +7,7 @@
 #pragma once
 
 #include <OLEDIndexFrame.hpp>
-#include <NTPClient.h>
-
+#include "TimeLib.h"
 #include "WundergroundClient.h"
 #include "WeatherStationFonts.h"
 
@@ -16,8 +15,7 @@ class WuFrame : public OLEDIndexFrame
 {
 protected:
   WundergroundClient *_wuClient;
-  NTPClient *_timeClient;
 
 public:
-  WuFrame(WundergroundClient *wuClient, NTPClient *timeClient);
+  WuFrame(WundergroundClient *wuClient);
 };

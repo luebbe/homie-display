@@ -3,7 +3,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.6"
+#define FW_VERSION "1.0.7"
 
 #include <Homie.h>
 #include <NTPClient.h>
@@ -13,6 +13,8 @@
 #include "StatusNode.hpp"
 #include "MqttNode.hpp"
 #include "WundergroundNode.hpp"
+#include "Time.h"
+#include "Timezone.h"
 
 // NTP Client
 const char *TC_SERVER = "europe.pool.ntp.org";
@@ -20,7 +22,13 @@ const long TC_TIMEZONEOFFSET = 0;  // Default UTC
 const long TC_UPDATEINTERVAL = 15; // Default update every 15 minutes
 
 WiFiUDP ntpUDP;
+
 NTPClient timeClient(ntpUDP, TC_SERVER);
+
+// For starters use hardwired Central European Time (Berlin, Paris, ...)
+TimeChangeRule CEST = {"CEST", Last, Sun, Mar, 2, 120}; // Central European Summer Time
+TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};   // Central European Standard Time
+Timezone timeZone(CEST, CET);
 
 // Display & UI
 #include <SSD1306.h>
@@ -39,12 +47,11 @@ WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
 StatusNode statusNode("Status", FW_NAME, FW_VERSION);
 MqttNode mqttNode("MqttClient");
-WundergroundNode wundergroundNode("Wunderground", &timeClient);
+WundergroundNode wundergroundNode("Wunderground");
 
-HomieSetting<long> timeclientOffset("TcOffset", "The time zone offset for the NTP client in hours (-12 .. 12");
 HomieSetting<long> timeclientUpdate("TcUpdate", "The update interval in minutes for the NTP client (must be at least 10 minutes)");
 
-bool _resetMinMax = false;
+int _yesterday = -1;
 
 void resumeTransition()
 {
@@ -72,32 +79,47 @@ void onHomieEvent(const HomieEvent &event)
   statusNode.event(event);
 }
 
-void loopHandler()
+time_t getNtpTime()
 {
   if (timeClient.update())
   {
-    String curTime = timeClient.getFormattedTime();
-    statusNode.setStatusText(curTime);
-    int secondsOfDay = timeClient.getEpochTime() % 86400;
-    if (!_resetMinMax)
-    {
-      // Reset min/max values at midnight
-      if (secondsOfDay == 0)
-      {
-        _resetMinMax = true;
-        mqttNode.resetMinMax();
-      }
-    }
-    else if (secondsOfDay == 10)
-    {
-      // Rearm trigger ten seconds after midnight
-      _resetMinMax = false;
-    }
+    // Always return the time for the current time zone
+    return timeZone.toLocal(timeClient.getEpochTime());
   }
+}
+
+String getFormattedTime(time_t rawTime)
+{
+  unsigned long hours = (rawTime % 86400L) / 3600;
+  String hoursStr = hours < 10 ? "0" + String(hours) : String(hours);
+
+  unsigned long minutes = (rawTime % 3600) / 60;
+  String minuteStr = minutes < 10 ? "0" + String(minutes) : String(minutes);
+
+  unsigned long seconds = rawTime % 60;
+  String secondStr = seconds < 10 ? "0" + String(seconds) : String(seconds);
+
+  return hoursStr + ":" + minuteStr + ":" + secondStr;
+}
+
+void loopHandler()
+{
+  String curTime = getFormattedTime(now());
+  statusNode.setStatusText(curTime);
+
+  // Reset min/max values at midnight
+  if (day() > _yesterday)
+  {
+    _yesterday = day();
+    mqttNode.resetMinMax();
+  }
+
+  // Don't rotate screens when an alert is shown
   if (statusNode.isAlert())
   {
     stopTransition();
   }
+
   ota.loop();
 }
 
@@ -105,11 +127,16 @@ void setupHandler()
 {
   // Called after WiFi is connected
   Homie.getLogger() << "Setuphandler" << endl
-                    << "• Time zone offset: UTC " << timeclientOffset.get() << " hours" << endl
                     << "• Update interval : " << timeclientUpdate.get() << " minutes" << endl;
-  timeClient.setTimeOffset(timeclientOffset.get() * 3600UL);
+
+  // initialize NTP Client
   timeClient.setUpdateInterval(timeclientUpdate.get() * 60000UL);
   timeClient.begin();
+
+  // Set callback for time library and leave the sync to the NTP client
+  setSyncProvider(getNtpTime);
+  setSyncInterval(0);
+  _yesterday = day();
 
   mqttNode.setupHandler();
   wundergroundNode.setupHandler();
@@ -131,7 +158,6 @@ void setup()
   mqttNode.beforeSetup();
   wundergroundNode.beforeSetup();
 
-  timeclientOffset.setDefaultValue(TC_TIMEZONEOFFSET);
   timeclientUpdate.setDefaultValue(TC_UPDATEINTERVAL).setValidator([](long candidate) {
     return (candidate >= 10) && (candidate <= 24 * 6 * 10); // Update interval etween 10 minutes and 24 hours
   });

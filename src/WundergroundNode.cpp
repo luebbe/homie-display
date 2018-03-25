@@ -15,12 +15,12 @@ HomieSetting<const char *> wundergroundCountry("WuCountry", "The country in whic
 HomieSetting<const char *> wundergroundCity("WuCity", "The city for which you want to retrieve the weather underground data");
 HomieSetting<long> wundergroundUpdate("WuUpdate", "The update interval in minutes for weather underground (must be at least 10 minutes)");
 
-WundergroundNode::WundergroundNode(const char *name, NTPClient *timeClient)
-    : HomieNode(name, "Wunderground"), _timeClient(timeClient)
+WundergroundNode::WundergroundNode(const char *name)
+    : HomieNode(name, "Wunderground")
 {
   _wuClient = new WundergroundClient(IS_METRIC);
-  _wuCurrent = new WuCurrentWeatherFrame(_wuClient, timeClient);
-  _wuForecast = new WuForecastFrame(_wuClient, timeClient);
+  _wuCurrent = new WuCurrentWeatherFrame(_wuClient);
+  _wuForecast = new WuForecastFrame(_wuClient);
   _nextUpdate = 0;
 }
 
@@ -55,7 +55,6 @@ void WundergroundNode::loop()
   {
     if (millis() >= _nextUpdate)
     {
-      Homie.getLogger() << "• WundergroundNode - fetch " << _timeClient->getFormattedTime() << endl;
       _wuClient->updateConditions(wundergroundApiKey.get(), wundergroundLanguage.get(), wundergroundCountry.get(), wundergroundCity.get());
       _wuClient->updateForecast(wundergroundApiKey.get(), wundergroundLanguage.get(), wundergroundCountry.get(), wundergroundCity.get());
       _nextUpdate = millis() + wundergroundUpdate.get() * 60000UL;

@@ -8,8 +8,8 @@
 
 #include "WundergroundCurrentWeatherFrame.hpp"
 
-WuCurrentWeatherFrame::WuCurrentWeatherFrame(WundergroundClient *wuClient, NTPClient *timeClient)
-    : WuFrame(wuClient, timeClient) {}
+WuCurrentWeatherFrame::WuCurrentWeatherFrame(WundergroundClient *wuClient)
+    : WuFrame(wuClient) {}
 
 void WuCurrentWeatherFrame::drawFrame(
     OLEDDisplay &display,

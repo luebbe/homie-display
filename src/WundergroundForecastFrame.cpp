@@ -7,8 +7,8 @@
 
 #include "WundergroundForecastFrame.hpp"
 
-WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient, NTPClient *timeClient)
-    : WuFrame(wuClient, timeClient) {}
+WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient)
+    : WuFrame(wuClient) {}
 
 void WuForecastFrame::drawFrame(
     OLEDDisplay &display,
@@ -17,7 +17,7 @@ void WuForecastFrame::drawFrame(
 {
   // Skip to the next day at noon
   int baseDay = 0;
-  if (_timeClient->getHours() >= 12)
+  if (isPM())
   {
     baseDay += 2;
   }

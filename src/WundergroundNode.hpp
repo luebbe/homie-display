@@ -8,7 +8,6 @@
 #pragma once
 
 #include <HomieNode.hpp>
-#include <NTPClient.h>
 
 #include "WundergroundClient.h"
 #include "WundergroundCurrentWeatherFrame.hpp"
@@ -24,7 +23,6 @@ private:
   const char *WUNDERGROUND_CITY = "YOURTOWN";
   const long WUNDERGROUND_UPDATE = 15; // Default update every 15 minutes
 
-  NTPClient *_timeClient;
   WundergroundClient *_wuClient;
   WuCurrentWeatherFrame *_wuCurrent;
   WuForecastFrame *_wuForecast;
@@ -35,7 +33,7 @@ protected:
   virtual void loop() override;
 
 public:
-  WundergroundNode(const char *name, NTPClient *timeClient);
+  WundergroundNode(const char *name);
   void beforeSetup();
   void setupHandler();
 };
