@@ -7,8 +7,11 @@
 
 #pragma once
 
+// #define DEBUGMINMAX
+
 #include <string>
 #include <OLEDIndexFrame.hpp>
+#include "TimeLib.h"
 #ifdef DEBUGMINMAX
 #include <Homie.hpp>
 #endif
@@ -18,13 +21,14 @@ class MqttFrame : public OLEDIndexFrame
 private:
   float cMaxFloat = 1E100;
   float cMinFloat = -cMaxFloat;
+  int _yesterday = -1;
   std::string _name;
   bool _isConfigured = false;
   bool _isOk = false;
   std::vector<std::string> _units;
   std::vector<float> _values;
   std::vector<float> _minValues;
-  std::vector<float> _maxValues;  
+  std::vector<float> _maxValues;
   bool _curPageCounted = false;
   uint8_t _curPage = 0;
 
@@ -34,13 +38,17 @@ private:
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
 
+  void resetMinMax();
+
 public:
   MqttFrame(const std::string name);
+
+  void loop();
+  void setupHandler();
 
   void clear();
   unsigned int addUnit(const std::string unit);
   unsigned int addValue(const float value);
-  void resetMinMax();
   bool getIsConfigured();
   void setIsConfigured(const bool value);
   void setIsOk(const bool value);

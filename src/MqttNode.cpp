@@ -48,6 +48,7 @@ void MqttNode::setupHandler()
   {
     reconnect();
   }
+  _mqttFrame->setupHandler();
 };
 
 bool MqttNode::hasSuffix(const std::string str, const std::string suffix)
@@ -195,11 +196,6 @@ void MqttNode::reconnect()
   }
 }
 
-void MqttNode::resetMinMax()
-{
-  _mqttFrame->resetMinMax();
-}
-
 void MqttNode::loop()
 {
   if (!_mqtt->connected())
@@ -213,4 +209,5 @@ void MqttNode::loop()
     }
   }
   _mqtt->loop();
+  _mqttFrame->loop();
 }

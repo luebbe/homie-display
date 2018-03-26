@@ -18,7 +18,6 @@
 
 // NTP Client
 const char *TC_SERVER = "europe.pool.ntp.org";
-const long TC_TIMEZONEOFFSET = 0;  // Default UTC
 const long TC_UPDATEINTERVAL = 15; // Default update every 15 minutes
 
 WiFiUDP ntpUDP;
@@ -50,8 +49,6 @@ MqttNode mqttNode("MqttClient");
 WundergroundNode wundergroundNode("Wunderground");
 
 HomieSetting<long> timeclientUpdate("TcUpdate", "The update interval in minutes for the NTP client (must be at least 10 minutes)");
-
-int _yesterday = -1;
 
 void resumeTransition()
 {
@@ -107,13 +104,6 @@ void loopHandler()
   String curTime = getFormattedTime(now());
   statusNode.setStatusText(curTime);
 
-  // Reset min/max values at midnight
-  if (day() > _yesterday)
-  {
-    _yesterday = day();
-    mqttNode.resetMinMax();
-  }
-
   // Don't rotate screens when an alert is shown
   if (statusNode.isAlert())
   {
@@ -126,8 +116,8 @@ void loopHandler()
 void setupHandler()
 {
   // Called after WiFi is connected
-  Homie.getLogger() << "Setuphandler" << endl
-                    << "• Update interval : " << timeclientUpdate.get() << " minutes" << endl;
+  Homie.getLogger() << "Setup handler" << endl
+                    << "• Time client update interval : " << timeclientUpdate.get() << " minutes" << endl;
 
   // initialize NTP Client
   timeClient.setUpdateInterval(timeclientUpdate.get() * 60000UL);
@@ -136,7 +126,6 @@ void setupHandler()
   // Set callback for time library and leave the sync to the NTP client
   setSyncProvider(getNtpTime);
   setSyncInterval(0);
-  _yesterday = day();
 
   mqttNode.setupHandler();
   wundergroundNode.setupHandler();

@@ -26,6 +26,21 @@ void MqttFrame::clear()
   _isConfigured = false;
 }
 
+void MqttFrame::loop()
+{
+  // Reset min/max values at midnight
+  if (day() > _yesterday)
+  {
+    _yesterday = day();
+    resetMinMax();
+  }
+}
+
+void MqttFrame::setupHandler()
+{
+  _yesterday = day();
+}
+
 unsigned int MqttFrame::addUnit(const std::string unit)
 {
   _units.push_back(unit);
