@@ -34,7 +34,8 @@ private:
 
   // Interface OLEDStatusIndicator
   virtual void drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state, uint8_t idx);
-
+ 
+  void drawTime(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
   void drawWifiStrength(OLEDDisplay &display);
 
 protected:

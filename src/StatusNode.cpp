@@ -115,15 +115,14 @@ void StatusNode::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int1
     display.drawXbm(74, DISPLAY_HEIGHT * 2 / 3, 8, 8, triCycle == 2 ? activeSymbol : inactiveSymbol);
   }
 
-  // draw status text at center
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
   if (Homie.isConnected())
   {
-    display.setFont(ArialMT_Plain_24);
-    display.drawString(x + DISPLAY_WIDTH / 2, y + 15, _statusText);
+    drawTime(display, state, x, y);
   }
   else
   {
+    // show firmware version while not connected
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setFont(ArialMT_Plain_16);
     display.drawString(x + DISPLAY_WIDTH / 2, y, (String)_fw_name);
     display.drawString(x + DISPLAY_WIDTH / 2, y + DISPLAY_HEIGHT / 3, (String)_fw_version);
@@ -164,6 +163,13 @@ void StatusNode::drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state, ui
     display.setFont(ArialMT_Plain_24);
     display.drawStringMaxWidth(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2, DISPLAY_WIDTH, _alertMessage);
   }
+}
+
+void StatusNode::drawTime(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
+{
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.setFont(ArialMT_Plain_24);
+  display.drawString(x + DISPLAY_WIDTH / 2, y + 15, _statusText);
 }
 
 void StatusNode::drawWifiStrength(OLEDDisplay &display)
