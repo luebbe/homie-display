@@ -61,9 +61,6 @@ void onHomieEvent(const HomieEvent &event)
 
 void loopHandler()
 {
-  String curTime = getFormattedTime(now());
-  statusNode.setStatusText(curTime);
-
   // Don't rotate screens when an alert is shown
   if (statusNode.isAlert())
   {

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <OLEDIndexFrame.hpp>
+#include "TimeClientHelper.hpp"
 #include "images.h"
 
 class StatusNode : public HomieNode, public OLEDIndexFrame
@@ -35,6 +36,9 @@ private:
   virtual void drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state, uint8_t idx);
 
   void drawWifiStrength(OLEDDisplay &display);
+
+protected:
+  virtual void loop() override;
 
 public:
   StatusNode(const char *name, const char *fw_name, const char *fw_version);

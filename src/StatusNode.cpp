@@ -86,6 +86,11 @@ void StatusNode::event(const HomieEvent &event)
   // Homie.getLogger() << "Event: " <<  _statusText << endl;
 }
 
+void StatusNode::loop()
+{
+  _statusText = getFormattedTime(now());
+}
+
 // Interface OLEDFrame
 void StatusNode::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
