@@ -3,8 +3,6 @@
  */
 
 #include "TimeClientHelper.hpp"
-#include <WifiUdp.h>
-#include <NTPClient.h>
 
 // NTP Client
 const char *TC_SERVER = "europe.pool.ntp.org";

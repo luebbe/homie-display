@@ -6,6 +6,8 @@
 
 #include "Time.h"
 #include "Timezone.h"
+#include <WiFiUdp.h>
+#include <NTPClient.h>
 
 struct TimeZoneInfo
 {
