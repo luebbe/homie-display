@@ -167,9 +167,34 @@ void StatusNode::drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state, ui
 
 void StatusNode::drawTime(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
+  if (x > 0)
+  {
+    if (!_pageSwitched)
+    {
+      _pageIndex = (_pageIndex + 1) % getTzCount();
+      _pageSwitched = true;
+    }
+  }
+  else
+  {
+    _pageSwitched = false;
+  }
+
+  TimeChangeRule *tcr = NULL;
+  String tzInfo = getTimeInfoFor(_pageIndex);
+  String tzTime = getFormattedTime(getTimeFor(_pageIndex, &tcr));
+
+  display.setFont(ArialMT_Plain_10);
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.drawString(x, y, tzInfo);
+  // if ((tcr != NULL) && (x >= 0))
+  // {
+  //   display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  //   display.drawString(x + DISPLAY_WIDTH, y, tcr->abbrev);
+  // }
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_24);
-  display.drawString(x + DISPLAY_WIDTH / 2, y + 15, _statusText);
+  display.drawString(x + DISPLAY_WIDTH / 2, y + 15, tzTime);
 }
 
 void StatusNode::drawWifiStrength(OLEDDisplay &display)

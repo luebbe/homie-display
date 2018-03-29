@@ -10,10 +10,24 @@ const char *TC_SERVER = "europe.pool.ntp.org";
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, TC_SERVER);
 
+// const char *tzInfo[] = {"CEST", "CDT", "MDT", "PDT"};
+
 // For starters use hardwired Central European Time (Berlin, Paris, ...)
 TimeChangeRule CEST = {"CEST", Last, Sun, Mar, 2, 120}; // Central European Summer Time
 TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};   // Central European Standard Time
-Timezone timeZone(CEST, CET);
+Timezone Europe(CEST, CET);
+
+// Japanese Time Zone (Tokyo)
+TimeChangeRule JPST = {"JST", First, Sun, Mar, 0, 9 * 60}; // UTC + 9 hours
+Timezone Japan(JPST, JPST);
+
+TimeZoneInfo _timezones[] = {
+    {
+        "Berlin",
+        &Europe,
+    },
+    {"Tokyo",
+     &Japan}};
 
 void timeClientSetup()
 {
@@ -21,16 +35,46 @@ void timeClientSetup()
   timeClient.begin();
 
   // Set callback for time library and leave the sync to the NTP client
-  setSyncProvider(getNtpTime);
+  setSyncProvider(getUtcTime);
   setSyncInterval(0);
 }
 
-time_t getNtpTime()
+int getTzCount()
+{
+  return (sizeof(_timezones) / sizeof(_timezones[0]));
+}
+
+time_t getUtcTime()
 {
   if (timeClient.update())
   {
-    // Always return the time for the current time zone
-    return timeZone.toLocal(timeClient.getEpochTime());
+    return timeClient.getEpochTime();
+  }
+}
+
+time_t getTimeFor(int index, TimeChangeRule **tcr)
+{
+  if (index < getTzCount())
+  {
+    // Zeturn the time for the selected time zone
+    return _timezones[index].timezone->toLocal(getUtcTime(), tcr);
+  }
+  else
+  {
+    return getUtcTime();
+  }
+}
+
+String getTimeInfoFor(int index)
+{
+  if (index < getTzCount())
+  {
+    // Return the time for the selected time zone
+    return _timezones[index].description;
+  }
+  else
+  {
+    return "UTC";
   }
 }
 
@@ -47,4 +91,3 @@ String getFormattedTime(time_t rawTime)
 
   return hoursStr + ":" + minuteStr + ":" + secondStr;
 }
-

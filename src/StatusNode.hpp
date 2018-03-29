@@ -25,6 +25,8 @@ private:
   long _lasttick;
   String _statusText;
   String _alertMessage;
+  bool _pageSwitched = true;
+  int _pageIndex = 0;
 
   // Interface HomieNode
   bool handleBroadcast(const String &level, const String &value);

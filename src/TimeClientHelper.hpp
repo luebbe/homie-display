@@ -9,6 +9,15 @@
 #include "Time.h"
 #include "Timezone.h"
 
+struct TimeZoneInfo
+{
+  char description[21]; // 20 chars max
+  Timezone *timezone;
+};
+
 void timeClientSetup();
-time_t getNtpTime();
+int getTzCount();
+time_t getUtcTime();
+time_t getTimeFor(int index, TimeChangeRule **tcr);
+String getTimeInfoFor(int index);
 String getFormattedTime(time_t rawTime);

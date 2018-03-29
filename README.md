@@ -29,8 +29,6 @@ Node | Parameter | Type | Usage
 MqttNode            | MqttServer          | string      | The MQTT server to which this node shall connect|
 MqttNode            | MqttTopic           | string      | The MQTT topic to which this node shall listen|
 MqttNode            | MqttTitle           | string      | The title that shall be shown on the frame|
-StatusNode          | TcOffset            | long        | The time zone offset for the NTP client in hours (-12 .. 12)|
-StatusNode          | TcUpdate            | long        | The update interval in minutes for the NTP client (must be at least 10 minutes)|
 Weather Underground | WuApiKey            | string      | Your weather underground API key|
 Weather Underground | WuLanguage          | string      | The language in which you want to retrieve the weather underground data|
 Weather Underground | WuCountry           | string      | The country in which your citie lies|
@@ -38,7 +36,7 @@ Weather Underground | WuCity              | string      | The city for which you
 Weather Underground | WuUpdate            | long        | The update interval in minutes for weather underground (must be at least 10 minutes)|
 
 ## Case
-A friend of mine printed this cute little case for me: [Desktop Widget](https://www.thingiverse.com/thing:857858/#files)
+A friend of mine printed this cute little case for me: [Desktop Widget](https://www.thingiverse.com/thing:857858/#files) found on Thingiverse.
 
 | <img src="./images/Case_Front1.jpg" align="center" width="200"> | <img src="./images/Case_Front2.jpg" align="center" width="200"> | <img src="./images/Case_Rear.jpg" align="center" width="200"> |
 |:---:|:---:|:---:|

@@ -158,30 +158,30 @@ void MqttFrame::drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state,
 {
   if (x > 0)
   {
-    if (!_curPageCounted)
+    if (!_pageSwitched)
     {
-      _curPage = (_curPage + 1) % _values.size();
-      _curPageCounted = true;
+      _pageIndex = (_pageIndex + 1) % _values.size();
+      _pageSwitched = true;
     }
   }
   else
   {
-    _curPageCounted = false;
+    _pageSwitched = false;
   }
 
   int baseoffset = 12;
   display.setFont(ArialMT_Plain_24);
 
   char tempString[20] = "";
-  sprintf(tempString, "%3.1f", _values[_curPage]);
+  sprintf(tempString, "%3.1f", _values[_pageIndex]);
 
   // Align output at space between value and unit
   display.setTextAlignment(TEXT_ALIGN_RIGHT);
   display.drawString(x + 84, y + baseoffset, tempString);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(x + 86, y + baseoffset, _units[_curPage].c_str());
+  display.drawString(x + 86, y + baseoffset, _units[_pageIndex].c_str());
 
-  sprintf(tempString, "%3.1f/%3.1f%s", _minValues[_curPage], _maxValues[_curPage], _units[_curPage].c_str());
+  sprintf(tempString, "%3.1f/%3.1f%s", _minValues[_pageIndex], _maxValues[_pageIndex], _units[_pageIndex].c_str());
 
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_CENTER);

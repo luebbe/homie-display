@@ -29,8 +29,8 @@ private:
   std::vector<float> _values;
   std::vector<float> _minValues;
   std::vector<float> _maxValues;
-  bool _curPageCounted = false;
-  uint8_t _curPage = 0;
+  bool _pageSwitched = true;
+  uint8_t _pageIndex = 0;
 
   void drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
   void drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
