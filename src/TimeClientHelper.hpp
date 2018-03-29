@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <NTPClient.h>
-#include <WifiUdp.h>
 #include "Time.h"
 #include "Timezone.h"
 
