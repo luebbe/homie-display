@@ -12,7 +12,7 @@
 #include "StatusNode.hpp"
 #include "MqttNode.hpp"
 #include "WundergroundNode.hpp"
-#include "TimeClienthelper.hpp"
+#include "TimeClientHelper.hpp"
 
 // Display & UI
 #include <SSD1306.h>
