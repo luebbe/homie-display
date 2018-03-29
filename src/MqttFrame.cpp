@@ -77,7 +77,7 @@ void MqttFrame::setName(const std::string name)
 
 void MqttFrame::setUnit(int index, const std::string unit)
 {
-  if (index <= _units.size())
+  if (index < _units.size())
   {
     _units[index] = unit;
   }
@@ -85,7 +85,7 @@ void MqttFrame::setUnit(int index, const std::string unit)
 
 void MqttFrame::setValue(int index, const float value)
 {
-  if (index <= _values.size())
+  if (index < _values.size())
   {
     _values[index] = value;
     if (value < _minValues[index])
