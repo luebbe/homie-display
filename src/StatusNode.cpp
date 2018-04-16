@@ -88,7 +88,8 @@ void StatusNode::event(const HomieEvent &event)
 
 void StatusNode::loop()
 {
-  _statusText = getFormattedTime(now());
+  TimeChangeRule *tcr = NULL;
+  _statusText = getFormattedTime(getTimeFor(0, &tcr));
 }
 
 // Interface OLEDFrame
