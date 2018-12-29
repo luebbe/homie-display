@@ -54,6 +54,8 @@ void onHomieEvent(const HomieEvent &event)
   case HomieEventType::WIFI_DISCONNECTED:
     stopTransition();
     break;
+  default:;
+    break;
   }
   // dispatch event
   statusNode.event(event);
