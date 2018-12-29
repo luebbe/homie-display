@@ -34,7 +34,7 @@ private:
 
   bool hasSuffix(const std::string str, const std::string suffix);
   void getNodeProperties(const std::string value);
-  std::string getPayload(byte *payload, unsigned int length);
+  std::string getPayload(byte *payload, uint16_t length);
 
   void reconnect();
   void subscribeTo(const char *subtopic);
@@ -42,7 +42,7 @@ private:
 
 protected:
   virtual void loop() override;
-  void callback(char *topic, byte *payload, unsigned int length);
+  void callback(char *topic, byte *payload, uint16_t length);
 
 public:
   MqttNode(const char *name);

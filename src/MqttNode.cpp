@@ -40,7 +40,7 @@ void MqttNode::setupHandler()
   }
 
   _mqtt->setCallback(
-      [this](char *topic, byte *payload, unsigned int length) {
+      [this](char *topic, byte *payload, uint16_t length) {
         this->callback(topic, payload, length);
       });
 
@@ -57,10 +57,10 @@ bool MqttNode::hasSuffix(const std::string str, const std::string suffix)
          str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-std::string MqttNode::getPayload(byte *payload, unsigned int length)
+std::string MqttNode::getPayload(byte *payload, uint16_t length)
 {
   std::string result = "";
-  for (int i = 0; i < length; i++)
+  for (uint16_t i = 0; i < length; i++)
   {
     result = result + (char)payload[i];
   }
@@ -96,7 +96,7 @@ void MqttNode::getNodeProperties(const std::string value)
   delete[] buf;
 }
 
-void MqttNode::callback(char *topic, byte *payload, unsigned int length)
+void MqttNode::callback(char *topic, byte *payload, uint16_t length)
 {
   std::string value = getPayload(payload, length);
   Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
@@ -128,13 +128,13 @@ void MqttNode::callback(char *topic, byte *payload, unsigned int length)
   else
   {
     // retrieve the propeties to which we have subscribed earlier
-    for (int i = 0; i < _units.size(); i++)
+    for (uint8_t i = 0; i < _units.size(); i++)
     {
       if (hasSuffix(topic, _units[i]))
         _mqttFrame->setUnit(i, value);
     }
 
-    for (int i = 0; i < _values.size(); i++)
+    for (uint8_t i = 0; i < _values.size(); i++)
     {
       if (hasSuffix(topic, _values[i]))
       {

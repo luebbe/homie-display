@@ -23,7 +23,6 @@ void WuCurrentWeatherFrame::drawFrame(
   display.setFont(ArialMT_Plain_24);
   String temp = _wuClient->getCurrentTemp() + "°C";
   display.drawString(58 + x, 15 + y, temp);
-  int tempWidth = display.getStringWidth(temp);
 
   display.setFont(Meteocons_Plain_42);
   String weatherIcon = _wuClient->getTodayIcon();
