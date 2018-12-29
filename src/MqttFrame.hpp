@@ -33,7 +33,8 @@ private:
   uint8_t _pageIndex = 0;
 
   void drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
-  void drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
+  void drawSingleMinMax(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
+  void drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
 
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;
@@ -47,12 +48,12 @@ public:
   void setupHandler();
 
   void clear();
-  unsigned int addUnit(const std::string unit);
-  unsigned int addValue(const float value);
+  uint16_t addUnit(const std::string unit);
+  uint16_t addValue(const float value);
   bool getIsConfigured();
   void setIsConfigured(const bool value);
   void setIsOk(const bool value);
-  void setName(std::string value);
-  void setUnit(int index, const std::string unit);
-  void setValue(int index, const float value);
+  void setName(const std::string value);
+  void setUnit(const uint8_t index, const std::string value);
+  void setValue(const uint8_t index, const float value);
 };

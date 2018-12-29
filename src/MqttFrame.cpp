@@ -3,7 +3,8 @@
  * 
  * Two alternative modes
  * - drawAllValues shows all values on the same screen
- * - drawSingleValue cycels through the values and shows only one at a time
+ * - drawSingleMinMax cycles through the values and shows only one at a time plus its min/max values below
+ * - drawSingleAndOthers cycles through the values and shows only one at a time plus two other values below
  *
  * Version: 1.0.1
  * Author: Lübbe Onken (http://github.com/luebbe)
@@ -41,13 +42,13 @@ void MqttFrame::setupHandler()
   _yesterday = day();
 }
 
-unsigned int MqttFrame::addUnit(const std::string unit)
+uint16_t MqttFrame::addUnit(const std::string unit)
 {
   _units.push_back(unit);
   return _units.size();
 }
 
-unsigned int MqttFrame::addValue(const float value)
+uint16_t MqttFrame::addValue(const float value)
 {
   _values.push_back(value);
   _minValues.push_back(cMaxFloat);
@@ -70,20 +71,20 @@ void MqttFrame::setIsOk(const bool value)
   _isOk = value;
 }
 
-void MqttFrame::setName(const std::string name)
+void MqttFrame::setName(const std::string value)
 {
-  _name = name;
-};
+  _name = value;
+}
 
-void MqttFrame::setUnit(int index, const std::string unit)
+void MqttFrame::setUnit(const uint8_t index, const std::string value)
 {
   if (index < _units.size())
   {
-    _units[index] = unit;
+    _units[index] = value;
   }
 }
 
-void MqttFrame::setValue(int index, const float value)
+void MqttFrame::setValue(const uint8_t index, const float value)
 {
   if (index < _values.size())
   {
@@ -107,7 +108,7 @@ void MqttFrame::setValue(int index, const float value)
 
 void MqttFrame::resetMinMax()
 {
-  for (int i = 0; i <= _minValues.size(); i++)
+  for (uint8_t i = 0; i <= _minValues.size(); i++)
   {
 #ifdef DEBUGMINMAX
     Homie.getLogger() << "Min/Max[" << i << "] " << _minValues[i] << "/" << _maxValues[i] << "->" << _values[i] << endl;
@@ -119,6 +120,7 @@ void MqttFrame::resetMinMax()
 
 void MqttFrame::drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
+  // Draws all values at the same time
   // Select different font size depending on the number of values to display
   // works fine with 0..3 parameters
   int baseoffset = 12;
@@ -142,20 +144,23 @@ void MqttFrame::drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, i
   // Align output at space between value and unit
   char tempString[20] = "";
   display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  for (int i = 0; i < _values.size(); i++)
+  for (uint8_t i = 0; i < _values.size(); i++)
   {
     sprintf(tempString, "%3.1f", _values[i]);
     display.drawString(x + 78, y + baseoffset + rowoffset * i, tempString);
   }
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  for (int i = 0; i < _units.size(); i++)
+  for (uint8_t i = 0; i < _units.size(); i++)
   {
     display.drawString(x + 80, y + baseoffset + rowoffset * i, _units[i].c_str());
   }
 }
 
-void MqttFrame::drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
+void MqttFrame::drawSingleMinMax(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
+  // Cycles through the collected values and draws a single value (modulo number of values)
+  // Displays its min/max values below it
+
   if (x > 0)
   {
     if (!_pageSwitched)
@@ -188,6 +193,46 @@ void MqttFrame::drawSingleValue(OLEDDisplay &display, OLEDDisplayUiState &state,
   display.drawString(x + 64, y + 36, tempString);
 }
 
+void MqttFrame::drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
+{
+  // Cycles through the collected values and draws a single value (modulo number of values)
+  // Displays two other values below it
+
+  if (x > 0)
+  {
+    if (!_pageSwitched)
+    {
+      _pageIndex = (_pageIndex + 1) % _values.size();
+      _pageSwitched = true;
+    }
+  }
+  else
+  {
+    _pageSwitched = false;
+  }
+
+  int baseoffset = 12;
+  display.setFont(ArialMT_Plain_24);
+
+  char tempString[20] = "";
+  sprintf(tempString, "%3.1f", _values[_pageIndex]);
+
+  // Align output at space between value and unit
+  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  display.drawString(x + 84, y + baseoffset, tempString);
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.drawString(x + 86, y + baseoffset, _units[_pageIndex].c_str());
+
+  uint8_t pred = (_pageIndex + _values.size() - 1) % _values.size();
+  uint8_t succ = (_pageIndex + 1) % _values.size();
+
+  sprintf(tempString, "%3.1f%s/%3.1f%s", _values[pred], _units[pred].c_str(), _values[succ], _units[succ].c_str());
+
+  display.setFont(ArialMT_Plain_10);
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+  display.drawString(x + 64, y + 36, tempString);
+}
+
 // Interface OLEDFrame
 void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
@@ -197,8 +242,10 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
 
   if (_isOk)
   {
+    // Maybe make this choice configurable as a homie setting in the future
     // drawAllValues(display, state, x, y);
-    drawSingleValue(display, state, x, y);
+    // drawSingleMinMax(display, state, x, y);
+    drawSingleAndOthers(display, state, x, y);
   }
   else
   {
@@ -206,4 +253,4 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.drawString(x + 64, y + 12, "Error");
   }
-};
+}
