@@ -226,7 +226,14 @@ void MqttFrame::drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &st
   uint8_t pred = (_pageIndex + _values.size() - 1) % _values.size();
   uint8_t succ = (_pageIndex + 1) % _values.size();
 
-  sprintf(tempString, "%3.1f%s/%3.1f%s", _values[pred], _units[pred].c_str(), _values[succ], _units[succ].c_str());
+  if (pred == succ)
+  {
+    sprintf(tempString, "%3.1f%s", _values[pred], _units[pred].c_str());
+  }
+  else
+  {
+    sprintf(tempString, "%3.1f%s/%3.1f%s", _values[pred], _units[pred].c_str(), _values[succ], _units[succ].c_str());
+  }
 
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_CENTER);

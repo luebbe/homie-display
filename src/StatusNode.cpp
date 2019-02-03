@@ -82,6 +82,8 @@ void StatusNode::event(const HomieEvent &event)
   case HomieEventType::MQTT_PACKET_ACKNOWLEDGED:
     _statusText = ""; //"MQTT packet acknowledged"; //, packetId: " + event.packetId;
     break;
+  default:
+    break;
   }
   // Homie.getLogger() << "Event: " <<  _statusText << endl;
 }
