@@ -13,9 +13,9 @@
 #include "MqttFrame.hpp"
 
 MqttFrame::MqttFrame(const std::string name)
+ :   _name(name),
+    _isConfigured(false)
 {
-  _name = name;
-  _isConfigured = false;
 }
 
 void MqttFrame::clear()
@@ -108,7 +108,7 @@ void MqttFrame::setValue(const uint8_t index, const float value)
 
 void MqttFrame::resetMinMax()
 {
-  for (uint8_t i = 0; i <= _minValues.size(); i++)
+  for (uint8_t i = 0; i < _minValues.size(); i++)
   {
 #ifdef DEBUGMINMAX
     Homie.getLogger() << "Min/Max[" << i << "] " << _minValues[i] << "/" << _maxValues[i] << "->" << _values[i] << endl;

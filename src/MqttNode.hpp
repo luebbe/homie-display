@@ -45,7 +45,7 @@ protected:
   void callback(char *topic, byte *payload, uint16_t length);
 
 public:
-  MqttNode(const char *name);
+  explicit MqttNode(const char *name);
 
   void beforeSetup();
   void setupHandler();

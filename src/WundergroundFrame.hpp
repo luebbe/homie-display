@@ -17,5 +17,5 @@ protected:
   WundergroundClient *_wuClient;
 
 public:
-  WuFrame(WundergroundClient *wuClient);
+  explicit WuFrame(WundergroundClient *wuClient);
 };

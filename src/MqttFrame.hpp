@@ -42,7 +42,7 @@ private:
   void resetMinMax();
 
 public:
-  MqttFrame(const std::string name);
+  explicit MqttFrame(const std::string name);
 
   void loop();
   void setupHandler();

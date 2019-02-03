@@ -12,9 +12,9 @@ HomieSetting<const char *> mqttTopic("MqttTopic", "The MQTT topic to which this 
 HomieSetting<const char *> mqttTitle("MqttTitle", "The title that shall be shown on the frame");
 
 MqttNode::MqttNode(const char *name)
-    : HomieNode(name, "MqttClient")
+    : HomieNode(name, "MqttClient"), _name(name)
 {
-  _name = name;
+  
   _mqtt = new PubSubClient(_wifiClient);
   _mqttFrame = new MqttFrame(name);
 }

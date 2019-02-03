@@ -33,7 +33,7 @@ protected:
   virtual void loop() override;
 
 public:
-  WundergroundNode(const char *name);
+  explicit WundergroundNode(const char *name);
   void beforeSetup();
   void setupHandler();
 };
