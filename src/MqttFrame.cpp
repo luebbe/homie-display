@@ -13,8 +13,8 @@
 #include "MqttFrame.hpp"
 
 MqttFrame::MqttFrame(const std::string name)
- :   _name(name),
-    _isConfigured(false)
+    : _name(name),
+      _isConfigured(false)
 {
 }
 
@@ -118,6 +118,22 @@ void MqttFrame::resetMinMax()
   }
 }
 
+void MqttFrame::checkPageSwitched(int16_t x)
+{
+  if (x > 0)
+  {
+    if (!_pageSwitched)
+    {
+      _pageIndex = (_pageIndex + 1) % _values.size();
+      _pageSwitched = true;
+    }
+  }
+  else
+  {
+    _pageSwitched = false;
+  }
+}
+
 void MqttFrame::drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
   // Draws all values at the same time
@@ -161,18 +177,7 @@ void MqttFrame::drawSingleMinMax(OLEDDisplay &display, OLEDDisplayUiState &state
   // Cycles through the collected values and draws a single value (modulo number of values)
   // Displays its min/max values below it
 
-  if (x > 0)
-  {
-    if (!_pageSwitched)
-    {
-      _pageIndex = (_pageIndex + 1) % _values.size();
-      _pageSwitched = true;
-    }
-  }
-  else
-  {
-    _pageSwitched = false;
-  }
+  checkPageSwitched(x);
 
   int baseoffset = 12;
   display.setFont(ArialMT_Plain_24);
@@ -196,20 +201,9 @@ void MqttFrame::drawSingleMinMax(OLEDDisplay &display, OLEDDisplayUiState &state
 void MqttFrame::drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
 {
   // Cycles through the collected values and draws a single value (modulo number of values)
-  // Displays two other values below it
+  // Displays upt to two other values in smaller print below it
 
-  if (x > 0)
-  {
-    if (!_pageSwitched)
-    {
-      _pageIndex = (_pageIndex + 1) % _values.size();
-      _pageSwitched = true;
-    }
-  }
-  else
-  {
-    _pageSwitched = false;
-  }
+  checkPageSwitched(x);
 
   int baseoffset = 12;
   display.setFont(ArialMT_Plain_24);

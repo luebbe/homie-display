@@ -32,6 +32,8 @@ private:
   bool _pageSwitched = true;
   uint8_t _pageIndex = 0;
 
+  void checkPageSwitched(int16_t x);
+
   void drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
   void drawSingleMinMax(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
   void drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y);
