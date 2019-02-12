@@ -10,8 +10,8 @@
 #include <HomieNode.hpp>
 
 #include "WundergroundClient.h"
-#include "WundergroundCurrentWeatherFrame.hpp"
-#include "WundergroundForecastFrame.hpp"
+#include "CurrentWeatherFrame.hpp"
+#include "ForecastFrame.hpp"
 
 class WundergroundNode : public HomieNode
 {

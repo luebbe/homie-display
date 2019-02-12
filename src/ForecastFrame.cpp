@@ -1,11 +1,10 @@
 /*
  * An Oled display frame that shows the three day forecast
- * from weather underground
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#include "WundergroundForecastFrame.hpp"
+#include "ForecastFrame.hpp"
 
 WuForecastFrame::WuForecastFrame(WundergroundClient *wuClient)
     : WuFrame(wuClient) {}

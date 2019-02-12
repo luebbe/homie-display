@@ -1,12 +1,11 @@
 /*
  * An Oled display frame that shows the current weather
- * from weather underground
  *
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
-#include "WundergroundCurrentWeatherFrame.hpp"
+#include "CurrentWeatherFrame.hpp"
 
 WuCurrentWeatherFrame::WuCurrentWeatherFrame(WundergroundClient *wuClient)
     : WuFrame(wuClient) {}
