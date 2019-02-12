@@ -29,9 +29,9 @@ void MqttNode::beforeSetup()
   mqttTitle.setDefaultValue("");
 }
 
-void MqttNode::setupHandler()
+void MqttNode::onReadyToOperate()
 {
-  Homie.getLogger() << "• MqttNode - Setuphandler" << endl;
+  Homie.getLogger() << "• MqttNode - onReadyToOperate" << endl;
 
   if (mqttTitle.wasProvided())
   {
@@ -48,7 +48,7 @@ void MqttNode::setupHandler()
   {
     reconnect();
   }
-  _mqttFrame->setupHandler();
+  _mqttFrame->onReadyToOperate();
 };
 
 bool MqttNode::hasSuffix(const std::string str, const std::string suffix)

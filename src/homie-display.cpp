@@ -78,9 +78,6 @@ void setupHandler()
   Homie.getLogger() << "Setup handler" << endl;
 
   timeClientSetup();
-
-  mqttNode.setupHandler();
-  wundergroundNode.setupHandler();
 }
 
 void setup()
@@ -96,6 +93,7 @@ void setup()
   Homie.getLogger() << "• Wire begin SDA=" << PIN_SDA << " SCL=" << PIN_SCL << endl;
   Wire.begin(PIN_SDA, PIN_SCL);
 
+  // Populate homie settings before Homie.setup()
   mqttNode.beforeSetup();
   wundergroundNode.beforeSetup();
 

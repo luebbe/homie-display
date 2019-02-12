@@ -47,7 +47,7 @@ public:
   explicit MqttFrame(const std::string name);
 
   void loop();
-  void setupHandler();
+  void onReadyToOperate();
 
   void clear();
   uint16_t addUnit(const std::string unit);

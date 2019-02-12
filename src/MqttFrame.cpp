@@ -37,7 +37,7 @@ void MqttFrame::loop()
   }
 }
 
-void MqttFrame::setupHandler()
+void MqttFrame::onReadyToOperate()
 {
   _yesterday = day();
 }

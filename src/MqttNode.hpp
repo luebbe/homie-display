@@ -36,17 +36,16 @@ private:
   void getNodeProperties(const std::string value);
   std::string getPayload(byte *payload, uint16_t length);
 
+  void callback(char *topic, byte *payload, uint16_t length);
   void reconnect();
   void subscribeTo(const char *subtopic);
   void unsubscribeFrom(const char *subtopic);
 
 protected:
   virtual void loop() override;
-  void callback(char *topic, byte *payload, uint16_t length);
+  virtual void onReadyToOperate() override;
 
 public:
   explicit MqttNode(const char *name);
-
   void beforeSetup();
-  void setupHandler();
 };

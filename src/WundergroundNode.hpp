@@ -31,9 +31,9 @@ private:
 
 protected:
   virtual void loop() override;
+  virtual void onReadyToOperate() override;
 
 public:
   explicit WundergroundNode(const char *name);
   void beforeSetup();
-  void setupHandler();
 };

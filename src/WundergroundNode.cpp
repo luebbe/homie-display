@@ -38,9 +38,9 @@ void WundergroundNode::beforeSetup()
   });
 }
 
-void WundergroundNode::setupHandler()
+void WundergroundNode::onReadyToOperate()
 {
-  Homie.getLogger() << "• WundergroundNode - Setuphandler" << endl;
+  Homie.getLogger() << "• WundergroundNode - onReadyToOperate" << endl;
   _nextUpdate = millis() + 5000; // Wait 5 seconds before fetching weather underground data for the first time
 };
 
