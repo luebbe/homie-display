@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <WundergroundFrame.hpp>
+#include <WeatherFrame.hpp>
 
 class WuForecastFrame : public WuFrame
 {
