@@ -1,20 +1,23 @@
 /*
  * An Oled display frame that shows the three day forecast
- * Version: 2.0.0
+ * form openweathermap.org
+ * Version: 3.0.0
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
 #pragma once
 
-#include <WeatherFrame.hpp>
+#include <OLEDIndexFrame.hpp>
+#include "TimeLib.h"
+#include "WeatherStationFonts.h"
 
-class WuForecastFrame : public WuFrame
+class ForecastFrame : public OLEDIndexFrame
 {
 private:
   void drawForecastDetails(OLEDDisplay &display, int x, int y, int dayIndex);
 
 public:
-  explicit WuForecastFrame(WundergroundClient *wuClient);
+  explicit ForecastFrame();
 
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;

@@ -11,7 +11,7 @@
 #include "welcome.hpp"
 #include "StatusNode.hpp"
 #include "MqttNode.hpp"
-#include "WundergroundNode.hpp"
+#include "OwmNode.hpp"
 #include "TimeClientHelper.hpp"
 
 // Display & UI
@@ -31,7 +31,7 @@ WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
 StatusNode statusNode("Status", FW_NAME, FW_VERSION);
 MqttNode mqttNode("MqttClient");
-WundergroundNode wundergroundNode("Wunderground");
+OwmNode owmNode("OpenWeatherMap");
 
 void resumeTransition()
 {
@@ -95,7 +95,7 @@ void setup()
 
   // Populate homie settings before Homie.setup()
   mqttNode.beforeSetup();
-  wundergroundNode.beforeSetup();
+  owmNode.beforeSetup();
 
   // Display and UI
   ui.setTargetFPS(30);
@@ -114,7 +114,7 @@ void setup()
   Homie.onEvent(onHomieEvent);
 
   Homie.disableResetTrigger();
-  Homie.disableLedFeedback();
+  // Homie.disableLedFeedback();
   Homie.setLoopFunction(loopHandler);
   Homie.setSetupFunction(setupHandler);
   Homie.setup();

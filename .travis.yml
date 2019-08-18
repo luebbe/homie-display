@@ -14,4 +14,4 @@ install:
     - pip install -U platformio
 
 script:
-    - platformio ci --lib="." --lib="lib/WundergroundClient" --project-conf=platformio.ini
+    - platformio ci --lib="." --project-conf=platformio.ini

@@ -22,6 +22,9 @@ SOFTWARE.
 
 See more at http://blog.squix.ch
 */
+
+#pragma once
+
 #define FONT_LIB_V3
 // Created by http://oleddisplay.squix.ch/ Consider a donation
 // In case of problems make sure that you are using the font file with the correct version!

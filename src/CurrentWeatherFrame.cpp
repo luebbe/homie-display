@@ -1,30 +1,39 @@
 /*
  * An Oled display frame that shows the current weather
- *
- * Version: 2.0.0
+ * form openweathermap.org
+ * Version: 3.0.0
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
 #include "CurrentWeatherFrame.hpp"
 
-WuCurrentWeatherFrame::WuCurrentWeatherFrame(WundergroundClient *wuClient)
-    : WuFrame(wuClient) {}
+CurrentWeatherFrame::CurrentWeatherFrame()
+{
+}
 
-void WuCurrentWeatherFrame::drawFrame(
+void CurrentWeatherFrame::drawFrame(
     OLEDDisplay &display,
     OLEDDisplayUiState &state,
     int16_t x, int16_t y)
 {
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(58 + x, 5 + y, _wuClient->getWeatherText());
+  display.drawString(58 + x, 5 + y, data.description);
 
   display.setFont(ArialMT_Plain_24);
-  String temp = _wuClient->getCurrentTemp() + "°C";
+  String temp = String(data.temp, 1) + "°C";
   display.drawString(58 + x, 15 + y, temp);
 
   display.setFont(Meteocons_Plain_42);
-  String weatherIcon = _wuClient->getTodayIcon();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  String weatherIcon = data.iconMeteoCon;
   int weatherIconWidth = display.getStringWidth(weatherIcon);
-  display.drawString(30 + x - weatherIconWidth / 2, 05 + y, weatherIcon);
+  display.drawString(30 + x - weatherIconWidth / 2, 5 + y, weatherIcon);
+}
+
+void CurrentWeatherFrame::update(String apiKey, String locationId, String language, boolean isMetric)
+{
+  client.setLanguage(language);
+  client.setMetric(isMetric);
+  client.updateCurrentById(&data, apiKey, locationId);
 }
