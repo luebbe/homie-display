@@ -9,15 +9,22 @@
 
 #include <OLEDIndexFrame.hpp>
 #include "TimeLib.h"
+#include "OpenWeatherMapForecast.h"
 #include "WeatherStationFonts.h"
 
 class ForecastFrame : public OLEDIndexFrame
 {
 private:
+  static const uint8_t MAX_FORECASTS = 15;
+  OpenWeatherMapForecast client;
+  OpenWeatherMapForecastData data[MAX_FORECASTS];
+
   void drawForecastDetails(OLEDDisplay &display, int x, int y, int dayIndex);
 
 public:
   explicit ForecastFrame();
+
+  void update(String apiKey, String locationId, String language, boolean isMetric);
 
   // Interface OLEDFrame
   virtual void drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y) override;

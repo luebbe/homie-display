@@ -8,7 +8,8 @@
 #include "ForecastFrame.hpp"
 
 ForecastFrame::ForecastFrame()
-{}
+{
+}
 
 void ForecastFrame::drawFrame(
     OLEDDisplay &display,
@@ -33,14 +34,25 @@ void ForecastFrame::drawForecastDetails(
 {
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_10);
-  String day = "zzz"; //_wuClient->getForecastTitle(dayIndex).substring(0, 3);
-  day.toUpperCase();
-  display.drawString(x + 20, y, day);
+  // String day = data[dayIndex]
+  //   //_wuClient->getForecastTitle(dayIndex).substring(0, 3);
+  // day.toUpperCase();
+  // display.drawString(x + 20, y, day);
 
   display.setFont(Meteocons_Plain_21);
-  display.drawString(x + 20, y + 12, "AA");//_wuClient->getForecastIcon(dayIndex));
+  display.drawString(x + 20, y + 12, data[dayIndex].iconMeteoCon);
 
   display.setFont(ArialMT_Plain_10);
-  display.drawString(x + 20, y + 34, "BB");//_wuClient->getForecastLowTemp(dayIndex) + "/" + _wuClient->getForecastHighTemp(dayIndex));
+  display.drawString(x + 20, y + 34, String(data[dayIndex].tempMin, 1) + "/" + String(data[dayIndex].tempMax, 1));
   display.setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void ForecastFrame::update(String apiKey, String locationId, String language, boolean isMetric)
+{
+  client.setLanguage(language);
+  client.setMetric(isMetric);
+
+  uint8_t allowedHours[] = {0, 12};
+  client.setAllowedHours(allowedHours, 2);
+  uint8_t foundForecasts = client.updateForecastsById(data, apiKey, locationId, MAX_FORECASTS);
 }

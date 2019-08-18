@@ -53,7 +53,7 @@ void OwmNode::loop()
     if (millis() >= _nextUpdate)
     {
       _owmCurrent->update(owmApiKey.get(), owmLocationId.get(), owmLanguage.get(), IS_METRIC);
-      //  _owmForecast->update(owmApiKey.get(), owmLanguage.get(), owmCountry.get());
+      _owmForecast->update(owmApiKey.get(), owmLocationId.get(), owmLanguage.get(), IS_METRIC);
       _nextUpdate = millis() + owmUpdate.get() * 60000UL;
     }
   }
