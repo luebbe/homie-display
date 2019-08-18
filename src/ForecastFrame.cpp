@@ -54,5 +54,5 @@ void ForecastFrame::update(String apiKey, String locationId, String language, bo
 
   uint8_t allowedHours[] = {0, 12};
   client.setAllowedHours(allowedHours, 2);
-  uint8_t foundForecasts = client.updateForecastsById(data, apiKey, locationId, MAX_FORECASTS);
+  client.updateForecastsById(data, apiKey, locationId, MAX_FORECASTS);
 }
