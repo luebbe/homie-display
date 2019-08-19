@@ -3,7 +3,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.0.9"
+#define FW_VERSION "1.1.0"
 
 #include <Homie.h>
 

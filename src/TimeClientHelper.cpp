@@ -21,11 +21,9 @@ Timezone Europe(CEST, CET);
 TimeChangeRule JPST = {"JST", First, Sun, Mar, 0, 9 * 60}; // UTC + 9 hours
 Timezone Japan(JPST, JPST);
 
-TimeZoneInfo _timezones[2] = {{
-                                 "Berlin",
-                                 &Europe,
-                             },
-                             {"Tokyo", &Japan}};
+TimeZoneInfo _timezones[2] = {
+    {"Berlin", &Europe},
+    {"Tokyo", &Japan}};
 
 void timeClientSetup()
 {
