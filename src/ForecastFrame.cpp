@@ -26,18 +26,17 @@ void ForecastFrame::drawForecastDetails(
     int x, int y,
     int dayIndex)
 {
-  // time_t time;
-  // time = data[dayIndex].observationTime;
-  String day = "";
-  // char *day = ctime(&time); //.substring(0, 3);
-  // strftime(day, 3, "a", &time); //.substring(0, 3);
+  const String DAYS[] = {"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"};
+  time_t observationtime = data[dayIndex].observationTime;
+  tm *timeinfo;
+  timeinfo = localtime(&observationtime);
 
-  // String day = data[dayIndex].
-  //   //_wuClient->getForecastTitle(dayIndex).substring(0, 3);
+  String dayinfo = DAYS[timeinfo->tm_wday];
+
   // day.toUpperCase();
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setFont(ArialMT_Plain_10);
-  display.drawString(x + 20, y, day);
+  display.drawString(x + 20, y, dayinfo);
 
   display.setFont(Meteocons_Plain_21);
   display.drawString(x + 20, y + 12, data[dayIndex].iconMeteoCon);
@@ -52,8 +51,8 @@ void ForecastFrame::update(String apiKey, String locationId, String language, bo
   client.setLanguage(language);
   client.setMetric(isMetric);
 
-  // Fetch alternating forecasts for night/day
-  uint8_t allowedHours[] = {0, 12};
-  client.setAllowedHours(allowedHours, 2);
+  // Fetch forecasts for noon
+  uint8_t allowedHours[] = {12};
+  client.setAllowedHours(allowedHours, 1);
   client.updateForecastsById(data, apiKey, locationId, MAX_FORECASTS);
 }
