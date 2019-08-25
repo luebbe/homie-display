@@ -56,7 +56,7 @@ void ForecastFrame::drawForecastDetails(
   display.drawString(x + 20, y + 12, data[dayIndex].iconMeteoCon);
 
   display.setFont(ArialMT_Plain_10);
-  display.drawString(x + 20, y + 34, String(data[nightIndex].tempMin) + "/" + String(data[dayIndex].tempMax));
+  display.drawString(x + 20, y + 34, String(data[nightIndex].tempMin, 0) + "/" + String(data[dayIndex].tempMax, 0));
   display.setTextAlignment(TEXT_ALIGN_LEFT);
 }
 
