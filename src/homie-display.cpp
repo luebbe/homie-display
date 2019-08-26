@@ -30,18 +30,34 @@ OtaDisplaySSD1306 ota(display, NULL);
 WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
 StatusNode statusNode("Status", FW_NAME, FW_VERSION);
+HomieNode displayNode("Display", "Display");
 MqttNode mqttNode("MqttClient");
 OwmNode owmNode("OpenWeatherMap");
 
 void resumeTransition()
 {
   ui.enableAutoTransition();
+  Homie.getLogger() << endl;
 }
 
 void stopTransition()
 {
   ui.disableAutoTransition();
   ui.switchToFrame(0);
+  Homie.getLogger() << endl;
+}
+
+bool displayNodeInputHandler(const HomieRange &range, const String &value)
+{
+  Homie.getLogger() << "Display on: " << value << endl;
+  if (value != "true" && value != "false")
+    return false;
+
+  if (value == "true")
+    display.displayOn();
+  else
+    display.displayOff();
+  return true;
 }
 
 void onHomieEvent(const HomieEvent &event)
@@ -96,6 +112,9 @@ void setup()
   // Populate homie settings before Homie.setup()
   mqttNode.beforeSetup();
   owmNode.beforeSetup();
+
+  // Advertise handler for display on/off
+  displayNode.advertise("on").settable(displayNodeInputHandler);
 
   // Display and UI
   ui.setTargetFPS(30);
