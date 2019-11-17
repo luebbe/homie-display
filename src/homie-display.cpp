@@ -3,88 +3,78 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.2.0"
+#define FW_VERSION "1.3.a"
 
 #include <Homie.h>
 
 #include "ota.hpp"
 #include "welcome.hpp"
-#include "StatusNode.hpp"
-#include "MqttNode.hpp"
-#include "OwmNode.hpp"
-#include "TimeClientHelper.hpp"
+#include "MqttCollector.hpp"
+
+OtaDisplay ota(NULL);
+Welcome welcome(FW_NAME, FW_VERSION);
+
+MqttCollector mqttCollector("MqttFrame", 0);
 
 // Display & UI
-#include <SSD1306.h>
-#include <OLEDDisplayUi.h>
+// #include <SSD1306.h>
+// #include <OLEDDisplayUi.h>
 
-const int I2C_DISPLAY_ADDRESS = 0x3c;
-const int PIN_SDA = 4; // =D2 on Wemos
-const int PIN_SCL = 5; // =D1 on Wemos
+// const int I2C_DISPLAY_ADDRESS = 0x3c;
+// const int PIN_SDA = 4; // =D2 on Wemos
+// const int PIN_SCL = 5; // =D1 on Wemos
 
 // Connected peripherals
-SSD1306Wire display(I2C_DISPLAY_ADDRESS, PIN_SDA, PIN_SCL);
-OLEDDisplayUi ui(&display);
+// SSD1306Wire display(I2C_DISPLAY_ADDRESS, PIN_SDA, PIN_SCL);
+// OLEDDisplayUi ui(&display);
 
-OtaDisplaySSD1306 ota(display, NULL);
-WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
+// OtaDisplaySSD1306 ota(display, NULL);
+// WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
-StatusNode statusNode("Status", FW_NAME, FW_VERSION);
-HomieNode displayNode("Display", "Display", "info");
-MqttNode mqttNode("MqttClient");
-OwmNode owmNode("OpenWeatherMap");
+// void resumeTransition()
+// {
+//   ui.enableAutoTransition();
+//   Homie.getLogger() << endl;
+// }
 
-void resumeTransition()
-{
-  ui.enableAutoTransition();
-  Homie.getLogger() << endl;
-}
+// void stopTransition()
+// {
+//   ui.disableAutoTransition();
+//   ui.switchToFrame(0);
+//   Homie.getLogger() << endl;
+// }
 
-void stopTransition()
-{
-  ui.disableAutoTransition();
-  ui.switchToFrame(0);
-  Homie.getLogger() << endl;
-}
+// bool displayNodeInputHandler(const HomieRange &range, const String &value)
+// {
+//   Homie.getLogger() << "Display on: " << value << endl;
+//   if (value != "true" && value != "false")
+//     return false;
 
-bool displayNodeInputHandler(const HomieRange &range, const String &value)
-{
-  Homie.getLogger() << "Display on: " << value << endl;
-  if (value != "true" && value != "false")
-    return false;
+//   if (value == "true")
+//     display.displayOn();
+//   else
+//     display.displayOff();
+//   return true;
+// }
 
-  if (value == "true")
-    display.displayOn();
-  else
-    display.displayOff();
-  return true;
-}
-
-void onHomieEvent(const HomieEvent &event)
-{
-  switch (event.type)
-  {
-  case HomieEventType::WIFI_CONNECTED:
-    resumeTransition();
-    break;
-  case HomieEventType::WIFI_DISCONNECTED:
-    stopTransition();
-    break;
-  default:;
-    break;
-  }
-  // dispatch event
-  statusNode.event(event);
-}
+// void onHomieEvent(const HomieEvent &event)
+// {
+//   switch (event.type)
+//   {
+//   case HomieEventType::WIFI_CONNECTED:
+//     resumeTransition();
+//     break;
+//   case HomieEventType::WIFI_DISCONNECTED:
+//     stopTransition();
+//     break;
+//   default:;
+//     break;
+//   }
+//   // dispatch event
+// }
 
 void loopHandler()
 {
-  // Don't rotate screens when an alert is shown
-  if (statusNode.isAlert())
-  {
-    stopTransition();
-  }
-
   ota.loop();
 }
 
@@ -92,12 +82,13 @@ void setupHandler()
 {
   // Called after WiFi is connected
   Homie.getLogger() << "Setup handler" << endl;
-
-  timeClientSetup();
+  mqttCollector.onReadyToOperate();
 }
 
 void setup()
 {
+  Homie_setFirmware(FW_NAME, FW_VERSION);
+
   Serial.begin(SERIAL_SPEED);
   Serial << endl
          << endl;
@@ -105,32 +96,25 @@ void setup()
   welcome.show();
   ota.setup();
 
+  mqttCollector.beforeSetup();
+
   // Initializes I2C for BME280 sensor and display
-  Homie.getLogger() << "• Wire begin SDA=" << PIN_SDA << " SCL=" << PIN_SCL << endl;
-  Wire.begin(PIN_SDA, PIN_SCL);
+  // Homie.getLogger() << "• Wire begin SDA=" << PIN_SDA << " SCL=" << PIN_SCL << endl;
+  // Wire.begin(PIN_SDA, PIN_SCL);
 
-  // Populate homie settings before Homie.setup()
-  mqttNode.beforeSetup();
-  owmNode.beforeSetup();
+  // // Display and UI
+  // ui.setTargetFPS(30);
+  // ui.setFrameAnimation(SLIDE_LEFT);
+  // ui.setTimePerFrame(5000);
+  // ui.setTimePerTransition(2000);
+  // ui.disableAutoTransition();
+  // ui.disableAllIndicators();
+  // ui.init();
+  // display.flipScreenVertically();
+  // display.setColor(WHITE);
+  // display.display();
 
-  // Advertise handler for display on/off
-  displayNode.advertise("on").settable(displayNodeInputHandler);
-
-  // Display and UI
-  ui.setTargetFPS(30);
-  ui.setFrameAnimation(SLIDE_LEFT);
-  ui.setTimePerFrame(5000);
-  ui.setTimePerTransition(2000);
-  ui.disableAutoTransition();
-  ui.disableAllIndicators();
-  ui.init();
-  display.flipScreenVertically();
-  display.setColor(WHITE);
-  display.display();
-
-  Homie_setFirmware(FW_NAME, FW_VERSION);
-
-  Homie.onEvent(onHomieEvent);
+  // Homie.onEvent(onHomieEvent);
 
   Homie.disableResetTrigger();
   // Homie.disableLedFeedback();
@@ -142,5 +126,5 @@ void setup()
 void loop()
 {
   Homie.loop();
-  ui.update();
+  // ui.update();
 }

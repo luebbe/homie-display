@@ -1,19 +1,17 @@
 /*
- * Node that subscribes to a MQTT topic and displays the values that it receives
+ * Class that subscribes to a MQTT topic and displays the values that it receives
  *
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Lübbe Onken (http://github.com/luebbe)
  */
 
 #pragma once
 
 #include <Homie.hpp>
-#include <HomieNode.hpp>
-#include <PubSubClient.h>
 
-#include "MqttFrame.hpp"
+// #include "MqttFrame.hpp"
 
-class MqttNode : public HomieNode
+class MqttCollector
 {
 private:
   const char *MQTT_SERVER = "MQTT_SERVER";
@@ -22,10 +20,6 @@ private:
   const char *cPropsTopic = "$properties";
   const char *cStatusTopic = "status";
 
-  WiFiClient _wifiClient;
-  PubSubClient *_mqtt;
-  MqttFrame *_mqttFrame;
-
   unsigned long _lastTry = 0;
 
   std::string _name;
@@ -33,19 +27,20 @@ private:
   std::vector<std::string> _units;
 
   bool hasSuffix(const std::string str, const std::string suffix);
-  void getNodeProperties(const std::string value);
+  void getNodeProperties(char *payload);
   std::string getPayload(byte *payload, uint16_t length);
 
-  void callback(char *topic, byte *payload, uint16_t length);
+  void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
   void reconnect();
-  void subscribeTo(const char *subtopic);
-  void unsubscribeFrom(const char *subtopic);
+  void subscribeTo(const char *topic);
+  void subscribeToSubtopics(const char *topic);
+  void unsubscribeFrom(const char *topic);
 
-protected:
-  virtual void loop() override;
-  virtual void onReadyToOperate() override;
+  // protected:
+  //   virtual void loop() override;
 
 public:
-  explicit MqttNode(const char *name);
+  explicit MqttCollector(const char *name, int something);
   void beforeSetup();
+  void onReadyToOperate();
 };
