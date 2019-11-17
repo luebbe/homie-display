@@ -9,7 +9,7 @@
 #include "StatusNode.hpp"
 
 StatusNode::StatusNode(const char *name, const char *fw_name, const char *fw_version)
-    : HomieNode(name, "Status")
+    : HomieNode(name, "Status", "info")
 {
   _name = name;
   _fw_name = fw_name;

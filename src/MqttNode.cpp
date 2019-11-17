@@ -12,9 +12,9 @@ HomieSetting<const char *> mqttTopic("MqttTopic", "The MQTT topic to which this 
 HomieSetting<const char *> mqttTitle("MqttTitle", "The title that shall be shown on the frame");
 
 MqttNode::MqttNode(const char *name)
-    : HomieNode(name, "MqttClient"), _name(name)
+    : HomieNode(name, "MqttClient", "info")
 {
-  
+  _name = name;
   _mqtt = new PubSubClient(_wifiClient);
   _mqttFrame = new MqttFrame(name);
 }
@@ -79,12 +79,12 @@ void MqttNode::getNodeProperties(const std::string value)
   while (pch != NULL)
   {
     // put them in the units or values basket and tell the display frame about them
-    if (hasSuffix(pch, "/unit"))
+    if (hasSuffix(pch, "/$unit"))
     {
       _units.push_back(pch);
       _mqttFrame->addUnit("N/A"); // could add any string here.
     }
-    else if (!hasSuffix(pch, "status"))
+    else if (!hasSuffix(pch, cStatusTopic))
     {
       _values.push_back(pch);
       _mqttFrame->addValue(0.0); // could add any value here.
@@ -101,49 +101,49 @@ void MqttNode::callback(char *topic, byte *payload, uint16_t length)
   std::string value = getPayload(payload, length);
   Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
 
-  if (hasSuffix(topic, cTypeTopic))
-  {
-    // type is used as display name for the frame when nothing was provided in the config
-    if (!mqttTitle.wasProvided())
-      _mqttFrame->setName(value);
-    unsubscribeFrom(cTypeTopic);
-  }
+  // if (hasSuffix(topic, cTypeTopic))
+  // {
+  //   // type is used as display name for the frame when nothing was provided in the config
+  //   if (!mqttTitle.wasProvided())
+  //     _mqttFrame->setName(value);
+  //   unsubscribeFrom(cTypeTopic);
+  // }
 
-  else if (hasSuffix(topic, cPropsTopic))
-  {
-    // autodetect and subscribe to all properties
-    if (!_mqttFrame->getIsConfigured())
-    {
-      getNodeProperties(value);
-      _mqttFrame->setIsConfigured(true);
-    }
-    unsubscribeFrom(cPropsTopic);
-  }
+  // else if (hasSuffix(topic, cPropsTopic))
+  // {
+  //   // autodetect and subscribe to all properties
+  //   if (!_mqttFrame->getIsConfigured())
+  //   {
+  //     getNodeProperties(value);
+  //     _mqttFrame->setIsConfigured(true);
+  //   }
+  //   unsubscribeFrom(cPropsTopic);
+  // }
 
-  else if (hasSuffix(topic, cStatusTopic))
-  {
-    _mqttFrame->setIsOk(value == "ok");
-  }
+  // else if (hasSuffix(topic, cStatusTopic))
+  // {
+  //   _mqttFrame->setIsOk(value == "ok");
+  // }
 
-  else
-  {
-    // retrieve the propeties to which we have subscribed earlier
-    for (uint8_t i = 0; i < _units.size(); i++)
-    {
-      if (hasSuffix(topic, _units[i]))
-        _mqttFrame->setUnit(i, value);
-    }
+  // else
+  // {
+  //   // retrieve the propeties to which we have subscribed earlier
+  //   for (uint8_t i = 0; i < _units.size(); i++)
+  //   {
+  //     if (hasSuffix(topic, _units[i]))
+  //       _mqttFrame->setUnit(i, value);
+  //   }
 
-    for (uint8_t i = 0; i < _values.size(); i++)
-    {
-      if (hasSuffix(topic, _values[i]))
-      {
-        float floatVal = 0.0;
-        if (sscanf(value.c_str(), "%f", &floatVal) > 0)
-          _mqttFrame->setValue(i, floatVal);
-      }
-    }
-  }
+  //   for (uint8_t i = 0; i < _values.size(); i++)
+  //   {
+  //     if (hasSuffix(topic, _values[i]))
+  //     {
+  //       float floatVal = 0.0;
+  //       if (sscanf(value.c_str(), "%f", &floatVal) > 0)
+  //         _mqttFrame->setValue(i, floatVal);
+  //     }
+  //   }
+  // }
 }
 
 void MqttNode::subscribeTo(const char *subtopic)
@@ -189,6 +189,7 @@ void MqttNode::reconnect()
         // the properties and default node name
         subscribeTo(cTypeTopic);
         subscribeTo(cPropsTopic);
+        subscribeTo(cStatusTopic);
       }
     }
     else

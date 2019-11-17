@@ -15,7 +15,7 @@ HomieSetting<const char *> owmLocationId("OwmLocationId", "The location for whic
 HomieSetting<long> owmUpdate("OwmUpdate", "The update interval in minutes for openweathermap.org (must be at least 10 minutes)");
 
 OwmNode::OwmNode(const char *name)
-    : HomieNode(name, "OpenWeatherMap")
+    : HomieNode(name, "OpenWeatherMap", "info")
 {
   _owmCurrent = new CurrentWeatherFrame();
   _owmForecast = new ForecastFrame();

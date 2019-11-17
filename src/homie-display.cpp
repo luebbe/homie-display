@@ -3,7 +3,7 @@
  */
 
 #define FW_NAME "display"
-#define FW_VERSION "1.1.0"
+#define FW_VERSION "1.2.0"
 
 #include <Homie.h>
 
@@ -30,7 +30,7 @@ OtaDisplaySSD1306 ota(display, NULL);
 WelcomeSSD1306 welcome(display, FW_NAME, FW_VERSION);
 
 StatusNode statusNode("Status", FW_NAME, FW_VERSION);
-HomieNode displayNode("Display", "Display");
+HomieNode displayNode("Display", "Display", "info");
 MqttNode mqttNode("MqttClient");
 OwmNode owmNode("OpenWeatherMap");
 
