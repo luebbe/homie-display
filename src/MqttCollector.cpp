@@ -47,7 +47,7 @@ void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     // autodetect and subscribe to all properties
     // if (!_mqttFrame->getIsConfigured())
     // {
-    getNodeProperties(payload);
+    getNodeProperties(payload, len);
     //   _mqttFrame->setIsConfigured(true);
     // }
     unsubscribeFrom(cPropsTopic);
@@ -103,69 +103,46 @@ bool MqttCollector::hasSuffix(const std::string str, const std::string suffix)
          str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-std::string MqttCollector::getPayload(byte *payload, uint16_t length)
+void MqttCollector::getNodeProperties(char *payload, size_t len)
 {
-  std::string result = "";
-  for (uint16_t i = 0; i < length; i++)
-  {
-    result = result + (char)payload[i];
-  }
-  return result;
-}
+  char *buf = new char[len + 1];   // Allocate buffer for parsing
+  char *unitTopic = new char[len]; // Allocate buffer for unit topic (it's big enough, too lazy to calculate)
+  strncpy(buf, payload, len);
+  buf[len] = 0;
 
-void MqttCollector::getNodeProperties(char *payload)
-{
   // Parse comma separated node properties
-  char *pch;
-  char delim[] = ",\0";
-
-  pch = strtok(payload, delim);
+  char delim[] = ",";
+  char *pch = strtok(buf, delim);
   while (pch != NULL)
   {
     // put them in the units or values basket and tell the display frame about them
-    if (hasSuffix(pch, "/$unit"))
+    if (!hasSuffix(pch, cStatusTopic))
     {
-      _units.push_back(pch);
-    }
-    else if (!hasSuffix(pch, cStatusTopic))
-    {
+      snprintf(unitTopic, len, "%s/%s", pch, cUnitTopic);
+
+      subscribeTo(pch);       // subscribe to value topic
+      subscribeTo(unitTopic); // subscribe to unit topic
       _values.push_back(pch);
+      _units.push_back(unitTopic);
     }
-    // finally subscribe to the corresponding topics and continue to parse
-    subscribeTo(pch);
-    subscribeToSubtopics(pch);
     pch = strtok(NULL, delim);
   }
-  // delete[] buf;
+  delete[] buf;
+  delete[] unitTopic;
+
+  Homie.getLogger() << "Units";
+  for (uint8_t i = 0; i < _units.size(); i++)
+  {
+    Homie.getLogger() << " " << _units[i].c_str();
+  }
+  Homie.getLogger() << endl;
+  Homie.getLogger() << "Values";
+  for (uint8_t i = 0; i < _values.size(); i++)
+  {
+    Homie.getLogger() << " " << _values[i].c_str();
+  }
+  Homie.getLogger() << endl;
 }
-
-// void MqttCollector::getNodeProperties(const std::string value)
-// {
-//   // Parse comma separated node properties
-//   char *pch;
-//   char *buf = new char[value.size() + 1];
-//   std::copy(value.begin(), value.end(), buf);
-//   buf[value.size()] = '\0'; // don't forget the terminating 0
-
-//   pch = strtok(buf, ",");
-//   while (pch != NULL)
-//   {
-//     // put them in the units or values basket and tell the display frame about them
-//     if (hasSuffix(pch, "/$unit"))
-//     {
-//       _units.push_back(pch);
-//     }
-//     else if (!hasSuffix(pch, cStatusTopic))
-//     {
-//       _values.push_back(pch);
-//     }
-//     // finally subscribe to the corresponding topics and continue to parse
-//     subscribeTo(pch);
-//     subscribeToSubtopics(pch);
-//     pch = strtok(NULL, ",");
-//   }
-//   delete[] buf;
-// }
 
 void MqttCollector::subscribeTo(const char *topic)
 {

@@ -19,6 +19,7 @@ private:
   const char *cTypeTopic = "$type";
   const char *cPropsTopic = "$properties";
   const char *cStatusTopic = "status";
+  const char *cUnitTopic = "$unit";
 
   unsigned long _lastTry = 0;
 
@@ -27,10 +28,9 @@ private:
   std::vector<std::string> _units;
 
   bool hasSuffix(const std::string str, const std::string suffix);
-  void getNodeProperties(char *payload);
-  std::string getPayload(byte *payload, uint16_t length);
+  void getNodeProperties(char *payload, size_t len);
 
-  void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
+  void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
   void reconnect();
   void subscribeTo(const char *topic);
   void subscribeToSubtopics(const char *topic);
