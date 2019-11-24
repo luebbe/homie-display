@@ -31,13 +31,9 @@ private:
   void getNodeProperties(char *payload, size_t len);
 
   void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
-  void reconnect();
   void subscribeTo(const char *topic);
   void subscribeToSubtopics(const char *topic);
   void unsubscribeFrom(const char *topic);
-
-  // protected:
-  //   virtual void loop() override;
 
 public:
   explicit MqttCollector(const char *name, int something);
