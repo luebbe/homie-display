@@ -33,12 +33,8 @@ void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
   buf[len] = 0;
 
   Homie.getLogger() << "Len: " << len << " Idx: " << index << " Tot: " << total << " " << topic << ":" << buf << endl;
-  // void MqttCollector::callback(char *topic, byte *payload, uint16_t length)
-  // {
-  //   std::string value = getPayload(payload, length);
-  //   Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
 
-  if (hasSuffix(topic, cTypeTopic))
+  if (isSubtopic(topic, cTypeTopic))
   {
     // type is used as display name for the frame when nothing was provided in the config
     // if (!mqttTitle.wasProvided())
@@ -46,7 +42,7 @@ void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     unsubscribeFrom(cTypeTopic);
   }
 
-  else if (hasSuffix(topic, cPropsTopic))
+  else if (isSubtopic(topic, cPropsTopic))
   {
     // autodetect and subscribe to all properties
     // if (!_mqttFrame->getIsConfigured())
@@ -57,31 +53,32 @@ void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     unsubscribeFrom(cPropsTopic);
   }
 
-  else if (hasSuffix(topic, cStatusTopic))
+  else if (isSubtopic(topic, cStatusTopic))
   {
     // _mqttFrame->setIsOk(value == "ok");
   }
 
-  // else
-  // {
-  //   // retrieve the propeties to which we have subscribed earlier
-  //   for (uint8_t i = 0; i < _units.size(); i++)
-  //   {
-  //     if (hasSuffix(topic, _units[i]))
-  //       _mqttFrame->setUnit(i, value);
-  //   }
+  else
+  {
+    // retrieve the propeties to which we have subscribed earlier
+    for (uint8_t i = 0; i < _units.size(); i++)
+    {
+      if (isSubtopic(topic, _units[i]))
+        Homie.getLogger() << "Unit: " << i << " " << buf << endl;
+      // _mqttFrame->setUnit(i, value);
+    }
 
-  //   for (uint8_t i = 0; i < _values.size(); i++)
-  //   {
-  //     if (hasSuffix(topic, _values[i]))
-  //     {
-  //       float floatVal = 0.0;
-  //       if (sscanf(value.c_str(), "%f", &floatVal) > 0)
-  //         _mqttFrame->setValue(i, floatVal);
-  //     }
-  //   }
-  // }
-  // }
+    for (uint8_t i = 0; i < _values.size(); i++)
+    {
+      if (isSubtopic(topic, _values[i]))
+      {
+        float floatVal = 0.0;
+        if (sscanf(buf, "%f", &floatVal) > 0)
+          Homie.getLogger() << "Value: " << i << " " << buf << endl;
+        // _mqttFrame->setValue(i, floatVal);
+      }
+    }
+  }
   delete[] buf;
 }
 
@@ -102,10 +99,11 @@ void MqttCollector::onReadyToOperate()
   }
 };
 
-bool MqttCollector::hasSuffix(const std::string str, const std::string suffix)
+bool MqttCollector::isSubtopic(const std::string topic, const std::string subtopic)
 {
-  return str.size() >= suffix.size() &&
-         str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+  std::string prefixSubtopic = "/" + subtopic;
+  return (topic.size() >= prefixSubtopic.size()) &&
+         (topic.compare(topic.size() - prefixSubtopic.size(), prefixSubtopic.size(), prefixSubtopic) == 0);
 }
 
 void MqttCollector::getNodeProperties(char *payload, size_t len)
@@ -118,7 +116,7 @@ void MqttCollector::getNodeProperties(char *payload, size_t len)
   while (pch != NULL)
   {
     // put them in the units or values basket and tell the display frame about them
-    if (!hasSuffix(pch, cStatusTopic))
+    if (!isSubtopic(pch, cStatusTopic))
     {
       snprintf(unitTopic, len, "%s/%s", pch, cUnitTopic);
 

@@ -27,7 +27,7 @@ private:
   std::vector<std::string> _values;
   std::vector<std::string> _units;
 
-  bool hasSuffix(const std::string str, const std::string suffix);
+  bool isSubtopic(const std::string topic, const std::string subtopic);
   void getNodeProperties(char *payload, size_t len);
 
   void onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
