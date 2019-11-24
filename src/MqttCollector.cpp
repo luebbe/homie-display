@@ -28,7 +28,11 @@ void MqttCollector::beforeSetup()
 
 void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total)
 {
-  Homie.getLogger() << "Len: " << len << " Idx: " << index << " Tot: " << total << " " << topic << ":" << ((String)payload).substring(0, len) << endl;
+  char *buf = new char[len + 1]; // Allocate buffer for parsing
+  strncpy(buf, payload, len);
+  buf[len] = 0;
+
+  Homie.getLogger() << "Len: " << len << " Idx: " << index << " Tot: " << total << " " << topic << ":" << buf << endl;
   // void MqttCollector::callback(char *topic, byte *payload, uint16_t length)
   // {
   //   std::string value = getPayload(payload, length);
@@ -47,7 +51,7 @@ void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
     // autodetect and subscribe to all properties
     // if (!_mqttFrame->getIsConfigured())
     // {
-    getNodeProperties(payload, len);
+    getNodeProperties(buf, len);
     //   _mqttFrame->setIsConfigured(true);
     // }
     unsubscribeFrom(cPropsTopic);
@@ -78,6 +82,7 @@ void MqttCollector::onMqttMessage(char *topic, char *payload, AsyncMqttClientMes
   //   }
   // }
   // }
+  delete[] buf;
 }
 
 void MqttCollector::onReadyToOperate()
@@ -105,14 +110,11 @@ bool MqttCollector::hasSuffix(const std::string str, const std::string suffix)
 
 void MqttCollector::getNodeProperties(char *payload, size_t len)
 {
-  char *buf = new char[len + 1];   // Allocate buffer for parsing
   char *unitTopic = new char[len]; // Allocate buffer for unit topic (it's big enough, too lazy to calculate)
-  strncpy(buf, payload, len);
-  buf[len] = 0;
 
   // Parse comma separated node properties
   char delim[] = ",";
-  char *pch = strtok(buf, delim);
+  char *pch = strtok(payload, delim);
   while (pch != NULL)
   {
     // put them in the units or values basket and tell the display frame about them
@@ -127,7 +129,6 @@ void MqttCollector::getNodeProperties(char *payload, size_t len)
     }
     pch = strtok(NULL, delim);
   }
-  delete[] buf;
   delete[] unitTopic;
 
   Homie.getLogger() << "Units";
