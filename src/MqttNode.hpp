@@ -7,6 +7,8 @@
 
 #pragma once
 
+// #define DEBUG
+
 #include <Homie.hpp>
 #include <HomieNode.hpp>
 #include <PubSubClient.h>
@@ -32,14 +34,15 @@ private:
   std::vector<std::string> _values;
   std::vector<std::string> _units;
 
-  bool hasSuffix(const std::string str, const std::string suffix);
+  bool hasSubtopic(const std::string str, const std::string topic);
   void getNodeProperties(const std::string value);
   std::string getPayload(byte *payload, uint16_t length);
 
   void callback(char *topic, byte *payload, uint16_t length);
   void reconnect();
-  void subscribeTo(const char *subtopic);
-  void unsubscribeFrom(const char *subtopic);
+  char *makeTopic(const char *topic, bool subtopics);
+  void subscribeTo(const char *topic);
+  void unsubscribeFrom(const char *topic);
 
 protected:
   virtual void loop() override;

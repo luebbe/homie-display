@@ -23,7 +23,9 @@ void MqttNode::beforeSetup()
 {
   // This has to be called before Homie.setup, because otherwise the default Values will
   // override the values which were already read from config.json
+#ifdef DEBUG
   Homie.getLogger() << "• MqttNode - Before Setup" << endl;
+#endif
   mqttServer.setDefaultValue(MQTT_SERVER);
   mqttTopic.setDefaultValue(MQTT_TOPIC);
   mqttTitle.setDefaultValue("");
@@ -31,8 +33,9 @@ void MqttNode::beforeSetup()
 
 void MqttNode::onReadyToOperate()
 {
+#ifdef DEBUG
   Homie.getLogger() << "• MqttNode - onReadyToOperate" << endl;
-
+#endif
   if (mqttTitle.wasProvided())
   {
     _name = mqttTitle.get();
@@ -51,10 +54,11 @@ void MqttNode::onReadyToOperate()
   _mqttFrame->onReadyToOperate();
 };
 
-bool MqttNode::hasSuffix(const std::string str, const std::string suffix)
+bool MqttNode::hasSubtopic(const std::string str, const std::string topic)
 {
-  return str.size() >= suffix.size() &&
-         str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+  std::string checktopic = "/" + topic;
+  return str.size() >= checktopic.size() &&
+         str.compare(str.size() - checktopic.size(), checktopic.size(), checktopic) == 0;
 }
 
 std::string MqttNode::getPayload(byte *payload, uint16_t length)
@@ -78,94 +82,113 @@ void MqttNode::getNodeProperties(const std::string value)
   pch = strtok(buf, ",");
   while (pch != NULL)
   {
-    // put them in the units or values basket and tell the display frame about them
-    if (hasSuffix(pch, "/$unit"))
-    {
-      _units.push_back(pch);
-      _mqttFrame->addUnit("N/A"); // could add any string here.
-    }
-    else if (!hasSuffix(pch, cStatusTopic))
-    {
-      _values.push_back(pch);
-      _mqttFrame->addValue(0.0); // could add any value here.
-    }
-    // finally subscribe to the corresponding topics and continue to parse
-    subscribeTo(pch);
-    pch = strtok(NULL, ",");
+    if (!hasSubtopic(pch, cStatusTopic)) // we're not interested in parsing the status topic any further
+    {                                  //
+      char *unit;
+      asprintf(&unit, "%s/$unit", pch);
+      _values.push_back(pch);          // store name of value topic in values basket
+      _units.push_back(unit);          // store name of unit topic in values basket
+      _mqttFrame->addValue(0.0);       // initialize display frame with dummy values
+      _mqttFrame->addUnit("N/A");      //
+    }                                  //
+    subscribeTo(makeTopic(pch, true)); // subscribe to the corresponding topic and wildcard subtopics
+    pch = strtok(NULL, ",");           // and continue to parse
   }
   delete[] buf;
 }
 
 void MqttNode::callback(char *topic, byte *payload, uint16_t length)
 {
-  std::string value = getPayload(payload, length);
+#ifdef DEBUG
   Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
+#endif
 
-  // if (hasSuffix(topic, cTypeTopic))
-  // {
-  //   // type is used as display name for the frame when nothing was provided in the config
-  //   if (!mqttTitle.wasProvided())
-  //     _mqttFrame->setName(value);
-  //   unsubscribeFrom(cTypeTopic);
-  // }
+  std::string value = getPayload(payload, length);
+  // type is used as display name for the frame when nothing was provided in the config
+  if (hasSubtopic(topic, cTypeTopic))
+  {
+    unsubscribeFrom(makeTopic(cTypeTopic, false));
+    if (!mqttTitle.wasProvided())
+      _mqttFrame->setName(value);
+  }
 
-  // else if (hasSuffix(topic, cPropsTopic))
-  // {
-  //   // autodetect and subscribe to all properties
-  //   if (!_mqttFrame->getIsConfigured())
-  //   {
-  //     getNodeProperties(value);
-  //     _mqttFrame->setIsConfigured(true);
-  //   }
-  //   unsubscribeFrom(cPropsTopic);
-  // }
+  // autodetect and subscribe to all properties
+  else if (hasSubtopic(topic, cPropsTopic))
+  {
+    unsubscribeFrom(makeTopic(cPropsTopic, false));
+    if (!_mqttFrame->getIsConfigured())
+    {
+      getNodeProperties(value);
+      _mqttFrame->setIsConfigured(true);
+    }
+  }
 
-  // else if (hasSuffix(topic, cStatusTopic))
-  // {
-  //   _mqttFrame->setIsOk(value == "ok");
-  // }
+  // Check if status of node is ok (if sensor could be read)
+  else if (hasSubtopic(topic, cStatusTopic))
+  {
+    _mqttFrame->setIsOk(value == "ok");
+  }
 
-  // else
-  // {
-  //   // retrieve the propeties to which we have subscribed earlier
-  //   for (uint8_t i = 0; i < _units.size(); i++)
-  //   {
-  //     if (hasSuffix(topic, _units[i]))
-  //       _mqttFrame->setUnit(i, value);
-  //   }
+  // retrieve the propeties to which we have subscribed earlier
+  else
+  {
+    for (uint8_t i = 0; i < _units.size(); i++)
+    {
+      if (hasSubtopic(topic, _units[i]))
+        _mqttFrame->setUnit(i, value);
+    }
 
-  //   for (uint8_t i = 0; i < _values.size(); i++)
-  //   {
-  //     if (hasSuffix(topic, _values[i]))
-  //     {
-  //       float floatVal = 0.0;
-  //       if (sscanf(value.c_str(), "%f", &floatVal) > 0)
-  //         _mqttFrame->setValue(i, floatVal);
-  //     }
-  //   }
-  // }
+    for (uint8_t i = 0; i < _values.size(); i++)
+    {
+      if (hasSubtopic(topic, _values[i]))
+      {
+        float floatVal = 0.0;
+        if (sscanf(value.c_str(), "%f", &floatVal) > 0)
+          _mqttFrame->setValue(i, floatVal);
+      }
+    }
+  }
 }
 
-void MqttNode::subscribeTo(const char *subtopic)
+void MqttNode::subscribeTo(const char *topic)
 {
-  char buf[256];
-  snprintf(buf, sizeof buf, "%s/%s", mqttTopic.get(), subtopic);
-  Homie.getLogger() << "  ◦ Subscribing to: " << buf;
-  if (_mqtt->subscribe(buf))
+#ifdef DEBUG
+  Homie.getLogger() << "  ◦ Subscribing to: " << topic;
+  if (_mqtt->subscribe(topic))
     Homie.getLogger() << " OK" << endl;
   else
     Homie.getLogger() << " Failed" << endl;
+#else
+  _mqtt->subscribe(topic);
+#endif
 }
 
-void MqttNode::unsubscribeFrom(const char *subtopic)
+void MqttNode::unsubscribeFrom(const char *topic)
 {
-  char buf[256];
-  snprintf(buf, sizeof buf, "%s/%s", mqttTopic.get(), subtopic);
-  Homie.getLogger() << "  ◦ Unsubscribing from: " << buf;
-  if (_mqtt->unsubscribe(buf))
+#ifdef DEBUG
+  Homie.getLogger() << "  ◦ Unsubscribing from: " << topic;
+  if (_mqtt->unsubscribe(topic))
     Homie.getLogger() << " OK" << endl;
   else
     Homie.getLogger() << " Failed" << endl;
+#else
+  _mqtt->unsubscribe(topic);
+#endif
+}
+
+char *MqttNode::makeTopic(const char *topic, bool subtopics)
+{
+#define bufSize 256
+  char *buf = new char[bufSize];
+  if (subtopics)
+  {
+    snprintf(buf, bufSize, "%s/%s/#", mqttTopic.get(), topic);
+  }
+  else
+  {
+    snprintf(buf, bufSize, "%s/%s", mqttTopic.get(), topic);
+  }
+  return buf;
 }
 
 void MqttNode::reconnect()
@@ -187,9 +210,9 @@ void MqttNode::reconnect()
       {
         // First subscribe just to type and properties in order to retrieve
         // the properties and default node name
-        subscribeTo(cTypeTopic);
-        subscribeTo(cPropsTopic);
-        subscribeTo(cStatusTopic);
+        subscribeTo(makeTopic(cTypeTopic, false));
+        subscribeTo(makeTopic(cPropsTopic, false));
+        subscribeTo(makeTopic(cStatusTopic, false));
       }
     }
     else

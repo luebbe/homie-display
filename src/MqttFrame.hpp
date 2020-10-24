@@ -19,6 +19,8 @@
 class MqttFrame : public OLEDIndexFrame
 {
 private:
+  const uint8_t cBaseYOffset = 12;
+  const uint8_t cSubYOffset = 36;
   float cMaxFloat = 1E100;
   float cMinFloat = -cMaxFloat;
   int _yesterday = -1;

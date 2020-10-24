@@ -139,7 +139,6 @@ void MqttFrame::drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, i
   // Draws all values at the same time
   // Select different font size depending on the number of values to display
   // works fine with 0..3 parameters
-  int baseoffset = 12;
   int rowoffset = 0;
   if (_values.size() <= 1)
   {
@@ -158,17 +157,18 @@ void MqttFrame::drawAllValues(OLEDDisplay &display, OLEDDisplayUiState &state, i
   }
 
   // Align output at space between value and unit
-  char tempString[20] = "";
+  char *outVal = NULL;
   display.setTextAlignment(TEXT_ALIGN_RIGHT);
   for (uint8_t i = 0; i < _values.size(); i++)
   {
-    sprintf(tempString, "%3.1f", _values[i]);
-    display.drawString(x + 78, y + baseoffset + rowoffset * i, tempString);
+    asprintf(&outVal, "%3.1f", _values[i]);
+    display.drawString(x + 78, y + cBaseYOffset + rowoffset * i, outVal);
+    free(outVal);
   }
   display.setTextAlignment(TEXT_ALIGN_LEFT);
   for (uint8_t i = 0; i < _units.size(); i++)
   {
-    display.drawString(x + 80, y + baseoffset + rowoffset * i, _units[i].c_str());
+    display.drawString(x + 80, y + cBaseYOffset + rowoffset * i, _units[i].c_str());
   }
 }
 
@@ -179,23 +179,19 @@ void MqttFrame::drawSingleMinMax(OLEDDisplay &display, OLEDDisplayUiState &state
 
   checkPageSwitched(x);
 
-  int baseoffset = 12;
+  char *outVal = NULL;
+
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+
   display.setFont(ArialMT_Plain_24);
-
-  char tempString[20] = "";
-  sprintf(tempString, "%3.1f", _values[_pageIndex]);
-
-  // Align output at space between value and unit
-  display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  display.drawString(x + 84, y + baseoffset, tempString);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(x + 86, y + baseoffset, _units[_pageIndex].c_str());
-
-  sprintf(tempString, "%3.1f/%3.1f%s", _minValues[_pageIndex], _maxValues[_pageIndex], _units[_pageIndex].c_str());
+  asprintf(&outVal, "%3.1f%s", _values[_pageIndex], _units[_pageIndex].c_str());
+  display.drawString(x + DISPLAY_WIDTH / 2, y + cBaseYOffset, outVal);
+  free(outVal);
 
   display.setFont(ArialMT_Plain_10);
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.drawString(x + 64, y + 36, tempString);
+  asprintf(&outVal, "%3.1f/%3.1f%s", _minValues[_pageIndex], _maxValues[_pageIndex], _units[_pageIndex].c_str());
+  display.drawString(x + DISPLAY_WIDTH / 2, y + cSubYOffset, outVal);
+  free(outVal);
 }
 
 void MqttFrame::drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &state, int16_t x, int16_t y)
@@ -205,33 +201,26 @@ void MqttFrame::drawSingleAndOthers(OLEDDisplay &display, OLEDDisplayUiState &st
 
   checkPageSwitched(x);
 
-  int baseoffset = 12;
+  char *outVal = NULL;
+
+  display.setTextAlignment(TEXT_ALIGN_CENTER);
+
   display.setFont(ArialMT_Plain_24);
+  asprintf(&outVal, "%3.1f%s", _values[_pageIndex], _units[_pageIndex].c_str());
+  display.drawString(x + DISPLAY_WIDTH / 2, y + cBaseYOffset, outVal);
+  free(outVal);
 
-  char tempString[20] = "";
-  sprintf(tempString, "%3.1f", _values[_pageIndex]);
-
-  // Align output at space between value and unit
-  display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  display.drawString(x + 84, y + baseoffset, tempString);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(x + 86, y + baseoffset, _units[_pageIndex].c_str());
-
-  uint8_t pred = (_pageIndex + _values.size() - 1) % _values.size();
+  uint8_t pred = (_pageIndex - 1) % _values.size();
   uint8_t succ = (_pageIndex + 1) % _values.size();
 
   if (pred == succ)
-  {
-    sprintf(tempString, "%3.1f%s", _values[pred], _units[pred].c_str());
-  }
+    asprintf(&outVal, "%3.1f%s", _values[pred], _units[pred].c_str());
   else
-  {
-    sprintf(tempString, "%3.1f%s/%3.1f%s", _values[pred], _units[pred].c_str(), _values[succ], _units[succ].c_str());
-  }
+    asprintf(&outVal, "%3.1f%s/%3.1f%s", _values[pred], _units[pred].c_str(), _values[succ], _units[succ].c_str());
 
   display.setFont(ArialMT_Plain_10);
-  display.setTextAlignment(TEXT_ALIGN_CENTER);
-  display.drawString(x + 64, y + 36, tempString);
+  display.drawString(x + DISPLAY_WIDTH / 2, y + cSubYOffset, outVal);
+  free(outVal);
 }
 
 // Interface OLEDFrame
@@ -252,6 +241,6 @@ void MqttFrame::drawFrame(OLEDDisplay &display, OLEDDisplayUiState &state, int16
   {
     display.setFont(ArialMT_Plain_24);
     display.setTextAlignment(TEXT_ALIGN_CENTER);
-    display.drawString(x + 64, y + 12, "Error");
+    display.drawString(x + DISPLAY_WIDTH / 2, y + 12, "Error");
   }
 }
