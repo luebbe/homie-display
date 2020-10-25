@@ -91,14 +91,14 @@ void MqttFrame::setValue(const uint8_t index, const float value)
     _values[index] = value;
     if (value < _minValues[index])
     {
-#ifdef DEBUGMINMAX
+#ifdef DEBUG_MINMAX
       Homie.getLogger() << "Min[" << index << "] " << _minValues[index] << "->" << value << endl;
 #endif
       _minValues[index] = value;
     }
     if (value > _maxValues[index])
     {
-#ifdef DEBUGMINMAX
+#ifdef DEBUG_MINMAX
       Homie.getLogger() << "Max[" << index << "] " << _maxValues[index] << "->" << value << endl;
 #endif
       _maxValues[index] = value;
@@ -110,7 +110,7 @@ void MqttFrame::resetMinMax()
 {
   for (uint8_t i = 0; i < _minValues.size(); i++)
   {
-#ifdef DEBUGMINMAX
+#ifdef DEBUG_MINMAX
     Homie.getLogger() << "Min/Max[" << i << "] " << _minValues[i] << "/" << _maxValues[i] << "->" << _values[i] << endl;
 #endif
     _minValues[i] = _values[i];

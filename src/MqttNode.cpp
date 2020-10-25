@@ -23,7 +23,7 @@ void MqttNode::beforeSetup()
 {
   // This has to be called before Homie.setup, because otherwise the default Values will
   // override the values which were already read from config.json
-#ifdef DEBUG
+#ifdef DEBUG_MQTT
   Homie.getLogger() << "• MqttNode - Before Setup" << endl;
 #endif
   mqttServer.setDefaultValue(MQTT_SERVER);
@@ -33,7 +33,7 @@ void MqttNode::beforeSetup()
 
 void MqttNode::onReadyToOperate()
 {
-#ifdef DEBUG
+#ifdef DEBUG_MQTT
   Homie.getLogger() << "• MqttNode - onReadyToOperate" << endl;
 #endif
   if (mqttTitle.wasProvided())
@@ -57,8 +57,15 @@ void MqttNode::onReadyToOperate()
 bool MqttNode::hasSubtopic(const std::string str, const std::string topic)
 {
   std::string checktopic = "/" + topic;
-  return str.size() >= checktopic.size() &&
-         str.compare(str.size() - checktopic.size(), checktopic.size(), checktopic) == 0;
+
+  bool result = str.size() >= checktopic.size() &&
+                str.compare(str.size() - checktopic.size(), checktopic.size(), checktopic) == 0;
+
+#ifdef DEBUG_MQTT
+  Homie.getLogger() << String(result) << " " << checktopic.c_str() << " " << str.c_str() << endl;
+#endif
+
+  return result;
 }
 
 std::string MqttNode::getPayload(byte *payload, uint16_t length)
@@ -83,7 +90,7 @@ void MqttNode::getNodeProperties(const std::string value)
   while (pch != NULL)
   {
     if (!hasSubtopic(pch, cStatusTopic)) // we're not interested in parsing the status topic any further
-    {                                  //
+    {                                    //
       char *unit;
       asprintf(&unit, "%s/$unit", pch);
       _values.push_back(pch);          // store name of value topic in values basket
@@ -99,21 +106,22 @@ void MqttNode::getNodeProperties(const std::string value)
 
 void MqttNode::callback(char *topic, byte *payload, uint16_t length)
 {
-#ifdef DEBUG
-  Homie.getLogger() << "  ◦ Received: " << topic << " " << value.c_str() << endl;
+  std::string value = getPayload(payload, length);
+#ifdef DEBUG_MQTT
+  Homie.getLogger() << endl << "  ◦ Received: " << topic << " " << value.c_str() << endl;
 #endif
 
-  std::string value = getPayload(payload, length);
   // type is used as display name for the frame when nothing was provided in the config
   if (hasSubtopic(topic, cTypeTopic))
   {
     unsubscribeFrom(makeTopic(cTypeTopic, false));
     if (!mqttTitle.wasProvided())
       _mqttFrame->setName(value);
+    return;
   }
 
   // autodetect and subscribe to all properties
-  else if (hasSubtopic(topic, cPropsTopic))
+  if (!_mqttFrame->getIsConfigured() && hasSubtopic(topic, cPropsTopic))
   {
     unsubscribeFrom(makeTopic(cPropsTopic, false));
     if (!_mqttFrame->getIsConfigured())
@@ -121,38 +129,42 @@ void MqttNode::callback(char *topic, byte *payload, uint16_t length)
       getNodeProperties(value);
       _mqttFrame->setIsConfigured(true);
     }
+    return;
   }
 
   // Check if status of node is ok (if sensor could be read)
-  else if (hasSubtopic(topic, cStatusTopic))
+  if (hasSubtopic(topic, cStatusTopic))
   {
     _mqttFrame->setIsOk(value == "ok");
+    return;
   }
 
-  // retrieve the propeties to which we have subscribed earlier
-  else
+  // Check if a unit was received
+  for (uint8_t i = 0; i < _units.size(); i++)
   {
-    for (uint8_t i = 0; i < _units.size(); i++)
+    if (hasSubtopic(topic, _units[i]))
     {
-      if (hasSubtopic(topic, _units[i]))
-        _mqttFrame->setUnit(i, value);
+      _mqttFrame->setUnit(i, value);
+      return;
     }
+  }
 
-    for (uint8_t i = 0; i < _values.size(); i++)
+  // Check if a value was received
+  for (uint8_t i = 0; i < _values.size(); i++)
+  {
+    if (hasSubtopic(topic, _values[i]))
     {
-      if (hasSubtopic(topic, _values[i]))
-      {
-        float floatVal = 0.0;
-        if (sscanf(value.c_str(), "%f", &floatVal) > 0)
-          _mqttFrame->setValue(i, floatVal);
-      }
+      float floatVal = 0.0;
+      if (sscanf(value.c_str(), "%f", &floatVal) > 0)
+        _mqttFrame->setValue(i, floatVal);
+      return;
     }
   }
 }
 
 void MqttNode::subscribeTo(const char *topic)
 {
-#ifdef DEBUG
+#ifdef DEBUG_MQTT
   Homie.getLogger() << "  ◦ Subscribing to: " << topic;
   if (_mqtt->subscribe(topic))
     Homie.getLogger() << " OK" << endl;
@@ -165,7 +177,7 @@ void MqttNode::subscribeTo(const char *topic)
 
 void MqttNode::unsubscribeFrom(const char *topic)
 {
-#ifdef DEBUG
+#ifdef DEBUG_MQTT
   Homie.getLogger() << "  ◦ Unsubscribing from: " << topic;
   if (_mqtt->unsubscribe(topic))
     Homie.getLogger() << " OK" << endl;

@@ -7,7 +7,7 @@
 
 #pragma once
 
-// #define DEBUG
+// #define DEBUG_MQTT
 
 #include <Homie.hpp>
 #include <HomieNode.hpp>

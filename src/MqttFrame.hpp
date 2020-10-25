@@ -7,12 +7,12 @@
 
 #pragma once
 
-// #define DEBUGMINMAX
+// #define DEBUG_MINMAX
 
 #include <string>
 #include <OLEDIndexFrame.hpp>
 #include "TimeLib.h"
-#ifdef DEBUGMINMAX
+#ifdef DEBUG_MINMAX
 #include <Homie.hpp>
 #endif
 
