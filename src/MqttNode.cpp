@@ -89,17 +89,17 @@ void MqttNode::getNodeProperties(const std::string value)
   pch = strtok(buf, ",");
   while (pch != NULL)
   {
-    if (!hasSubtopic(pch, cStatusTopic)) // we're not interested in parsing the status topic any further
+    if (strcmp(pch, cStatusTopic))       // we're interested in values from any other but the status topic
     {                                    //
-      char *unit;
-      asprintf(&unit, "%s/$unit", pch);
-      _values.push_back(pch);          // store name of value topic in values basket
-      _units.push_back(unit);          // store name of unit topic in values basket
-      _mqttFrame->addValue(0.0);       // initialize display frame with dummy values
-      _mqttFrame->addUnit("N/A");      //
-    }                                  //
-    subscribeTo(makeTopic(pch, true)); // subscribe to the corresponding topic and wildcard subtopics
-    pch = strtok(NULL, ",");           // and continue to parse
+      char *unit;                        //
+      asprintf(&unit, "%s/$unit", pch);  //
+      _values.push_back(pch);            // store name of value topic in values basket
+      _units.push_back(unit);            // store name of unit topic in values basket
+      _mqttFrame->addValue(0.0);         // initialize display frame with dummy values
+      _mqttFrame->addUnit("N/A");        //
+      subscribeTo(makeTopic(pch, true)); // subscribe to the corresponding topic and wildcard subtopics
+    }                                    //
+    pch = strtok(NULL, ",");             // and continue to parse
   }
   delete[] buf;
 }
@@ -108,7 +108,8 @@ void MqttNode::callback(char *topic, byte *payload, uint16_t length)
 {
   std::string value = getPayload(payload, length);
 #ifdef DEBUG_MQTT
-  Homie.getLogger() << endl << "  ◦ Received: " << topic << " " << value.c_str() << endl;
+  Homie.getLogger() << endl
+                    << "  ◦ Received: " << topic << " " << value.c_str() << endl;
 #endif
 
   // type is used as display name for the frame when nothing was provided in the config

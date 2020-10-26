@@ -45,6 +45,9 @@ void MqttFrame::onReadyToOperate()
 uint16_t MqttFrame::addUnit(const std::string unit)
 {
   _units.push_back(unit);
+#ifdef DEBUG_VALUES
+  Homie.getLogger() << "Add unit " << unit.c_str() << " " << _units.size() << endl;
+#endif
   return _units.size();
 }
 
@@ -53,6 +56,9 @@ uint16_t MqttFrame::addValue(const float value)
   _values.push_back(value);
   _minValues.push_back(cMaxFloat);
   _maxValues.push_back(cMinFloat);
+#ifdef DEBUG_VALUES
+  Homie.getLogger() << "Add value " << String(value) << " " << _values.size() << endl;
+#endif
   return _values.size();
 }
 

@@ -13,11 +13,11 @@ This firmware currently contains four frames
 - A status frame showing MQTT/Wifi status upon initialization and the current time when everything is up and running
 - The current weather for a open weathermap location Id that you have configured, fetched via [Open Weathermap](https://openweathermap.org/)
 - A three day weather forecast for the same location
-- Temperature and humidity fetched from a mqtt server using data as defined in [Homie Node Collection](https://github.com/luebbe/homie-node-collection)
+- Sensor values (e.g. temperature, humidity, pressure) fetched from a mqtt server using data as defined in [Homie Node Collection](https://github.com/luebbe/homie-node-collection) v1.1.0 and newer.
 
 The time zone, open weathermap URL and the mqtt topics for temperature/humidity are configurable
 
-The software is based on [Homie (v2.0)](https://github.com/marvinroger/homie-esp8266) and is developed using [PlatformIO](https://github.com/platformio)
+The software is based on [Homie (v3.0)](https://github.com/marvinroger/homie-esp8266) and is developed using [PlatformIO](https://github.com/platformio)
 
 ## Dependencies
 

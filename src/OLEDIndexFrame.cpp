@@ -21,6 +21,5 @@ void OLEDIndexFrame::drawOverlay(OLEDDisplay &display, OLEDDisplayUiState &state
   // draw current frame number at bottom left
   display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(0, 54,
-                     String(state.currentFrame + 1) + "/" + String(OLEDFrame::count()));
+  display.drawString(0, 54, String(state.currentFrame + 1) + "/" + String(OLEDFrame::count()));
 };

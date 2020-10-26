@@ -7,14 +7,13 @@
 
 #pragma once
 
+// #define DEBUG_VALUES
 // #define DEBUG_MINMAX
 
 #include <string>
 #include <OLEDIndexFrame.hpp>
 #include "TimeLib.h"
-#ifdef DEBUG_MINMAX
 #include <Homie.hpp>
-#endif
 
 class MqttFrame : public OLEDIndexFrame
 {
