@@ -27,11 +27,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio 
           
-      - name: Install Arduino Core for ESP8266
-        run: pio platform install espressif8266
-
-#      - name: Install Arduino Core for ESP32
-#        run: pio platform install espressif32
-
       - name: Run PlatformIO CI
-        run: pio ci --lib="." --lib="lib/OpenWeatherMapClient" --project-conf=platformio.ini
+        run: pio run -e esp12e
