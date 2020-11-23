@@ -1,7 +1,7 @@
 # Homie Display
 
 [![GitHub release](https://img.shields.io/github/release/luebbe/homie-display.svg?style=flat-square)](https://github.com/luebbe/homie-display/releases)
-[![Travis](https://img.shields.io/travis/luebbe/homie-display.svg?branch=master&style=flat-square)](https://travis-ci.org/luebbe/homie-display)
+[![Build status](https://img.shields.io/github/workflow/status/luebbe/homie-display/PlatformIO%20CI.svg?branch=master&style=flat-square)](https://github.com/luebbe/homie-display/actions)
 [![Codacy](https://img.shields.io/codacy/grade/475651b0c5e1421aa0266d7592891e68?style=flat-square)](https://www.codacy.com/app/luebbe/homie-display/dashboard)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![PlatformIO](https://img.shields.io/static/v1?label=Powered&message=PlatformIO&color=blue&style=flat-square)](https://platformio.org/lib/show/555/Homie)
